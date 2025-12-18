@@ -5,8 +5,12 @@ on:
     branches: [main]
 
 jobs:
-  build-and-test:
+  checks:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        check: [typecheck, lint, format:check, build, test]
     
     steps:
       - name: Checkout Code
@@ -20,18 +24,6 @@ jobs:
       - name: Install Dependencies
         run: bun install --frozen-lockfile
 
-      - name: Typecheck
-        run: bun run typecheck
-
-      - name: Lint
-        run: bun run lint
-
-      - name: Format
-        run: bun run format:check
-
-      - name: Build
-        run: bun run build
-
-      - name: Test
-        run: bun run test
+      - name: Run ${{ matrix.check }}
+        run: bun run ${{ matrix.check }}
 
