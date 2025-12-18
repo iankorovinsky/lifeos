@@ -11,7 +11,7 @@ lifeos/
 ├── packages/
 │   └── db/           # Prisma schema & database client
 │
-├── tooling/
+├── tools/
 │   └── scripts/      # Repo scripts
 │
 ├── package.json       # Root workspace config
