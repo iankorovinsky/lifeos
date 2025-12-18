@@ -6,6 +6,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint 'src/**/*.ts'",
     "test": "jest",
     "test:watch": "jest --watch"
