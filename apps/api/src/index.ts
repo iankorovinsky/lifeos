@@ -1,6 +1,4 @@
-import { PrismaClient } from '@lifeos/db';
-
-const prisma = new PrismaClient();
+import { prisma } from '@lifeos/db';
 
 console.log('Server starting...');
 

@@ -11,6 +11,7 @@
     "dev": "node tools/scripts/dev-tui.js",
     "dev:parallel": "turbo run dev --parallel --output-logs=full",
     "build": "turbo run build --output-logs=full",
+    "typecheck": "turbo run typecheck --output-logs=full",
     "lint": "turbo run lint --output-logs=full",
     "test": "turbo run test --parallel --output-logs=full",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\" --ignore-path .gitignore",
