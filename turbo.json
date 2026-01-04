@@ -5,10 +5,11 @@
       "cache": false
     },
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "^generate"],
       "outputs": ["dist/**", ".next/**"]
     },
     "typecheck": {
+      "dependsOn": ["^generate"],
       "outputs": []
     },
     "lint": {
@@ -19,7 +20,7 @@
       "cache": false
     },
     "generate": {
-      "outputs": ["packages/db/generated/**"]
+      "outputs": ["generated/**"]
     },
     "migrate:dev": {
       "cache": false
