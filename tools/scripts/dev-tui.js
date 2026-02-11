@@ -6,6 +6,9 @@ const contrib = require('blessed-contrib');
 const chokidar = require('chokidar');
 const path = require('path');
 
+// Load root .env file
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+
 // Create screen
 const screen = blessed.screen({
   smartCSR: true,
@@ -95,11 +98,12 @@ const colorize = (text, color) => {
   return `${colors[color] || ''}${text}${colors.reset}`;
 };
 
-// Spawn processes
+// Spawn processes with inherited env
+const spawnOpts = { stdio: 'pipe', env: { ...process.env } };
 const processes = {
-  web: spawn('bun', ['dev'], { cwd: 'apps/web', stdio: 'pipe' }),
-  api: spawn('bun', ['dev'], { cwd: 'apps/api', stdio: 'pipe' }),
-  db: spawn('bun', ['run', 'generate'], { cwd: 'packages/db', stdio: 'pipe' }),
+  web: spawn('bun', ['dev'], { ...spawnOpts, cwd: 'apps/web' }),
+  api: spawn('bun', ['dev'], { ...spawnOpts, cwd: 'apps/api' }),
+  db: spawn('bun', ['run', 'generate'], { ...spawnOpts, cwd: 'packages/db' }),
 };
 
 // Handle process errors
