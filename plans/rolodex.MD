@@ -15,8 +15,10 @@ model Person {
   description String?
   email       String?
   phone       String?
+  isFavorite  Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
 
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   roles       Role[]
@@ -27,6 +29,8 @@ model Person {
 
   @@index([userId])
   @@index([name])
+  @@index([userId, isFavorite])
+  @@index([userId, deletedAt])
   @@map("people")
 }
 
@@ -159,10 +163,11 @@ model User {
 - `getPeople(userId, filters)` - List with search, tag filtering
   - Query params: `search?`, `tagIds?`, `limit?`, `offset?`
   - Search across: name, description, role.title, role.company
+  - Always filter out soft-deleted people (`deletedAt IS NULL`)
 - `getPersonById(id, userId)` - Get single person with relations
 - `createPerson(userId, data)` - Create person with optional roles/tags
 - `updatePerson(id, userId, data)` - Update person
-- `deletePerson(id, userId)` - Soft delete or hard delete
+- `deletePerson(id, userId)` - Soft delete (set `deletedAt`), with optional hard delete path later
 
 #### `tagController.ts`
 - `getTags(userId)` - List all user's tags
@@ -209,6 +214,7 @@ export interface Person {
   description: string | null;
   email: string | null;
   phone: string | null;
+   isFavorite: boolean;
   roles: Role[];
   tags: Tag[];
   notes: PersonNote[];
@@ -216,6 +222,7 @@ export interface Person {
   favours: Favour[];
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
 }
 
 export interface Role {
@@ -271,6 +278,7 @@ export interface CreatePersonRequest {
   description?: string;
   email?: string;
   phone?: string;
+  isFavorite?: boolean;
   roleIds?: string[]; // For existing roles
   tagIds?: string[];
 }
@@ -280,6 +288,7 @@ export interface UpdatePersonRequest {
   description?: string;
   email?: string;
   phone?: string;
+  isFavorite?: boolean;
   tagIds?: string[]; // Replace all tags
 }
 
@@ -350,15 +359,22 @@ export interface PeopleQueryParams {
 - **Tag filter** - Multi-select or chip-based filter for tags
 - **People list** - Card/list view showing:
   - Name
+  - Favorite star toggle (filled if favorite)
   - Description (truncated)
   - Primary role (title @ company) if exists
   - Tags (colored chips)
   - Quick stats: # of asks, # of favours
+  - Sort mode defaults to favorites-first (favorites, then others by name or recency)
 - **Add person button** - Opens dialog/form
 
 #### Person Detail Page (`/app/rolodex/[id]/page.tsx`)
-- **Header** - Name, edit button, delete button
-- **Basic info** - Description, notes (editable)
+- **Header** - Name, inline edit toggle, delete (soft-delete) button
+- **Inline edit mode** - Toggling edit turns the entire view into a form in-place (no dialogs/routes):
+  - Name, description, email, phone
+  - Tags (multi-select)
+  - Favorite star
+  - Save / Cancel (revert to read-only view)
+- **Basic info** - Description and core fields shown read-only when not editing
 - **Roles section** - List of roles with add/edit/delete
 - **Tags section** - Tag chips with add/remove
 - **Asks section** - Checklist of asks with add/complete/delete
@@ -367,9 +383,16 @@ export interface PeopleQueryParams {
 #### Person Form (`/app/rolodex/[id]/edit/page.tsx` or dialog)
 - Name (required)
 - Description (textarea)
-- Notes (textarea, larger)
+- Email, phone
 - Tags (multi-select with create option)
 - Save/Cancel
+
+#### Create Person Sheet
+- **Trigger** - “Add person” button on main list opens a right-hand `Sheet`
+- **Sheet content**:
+  - Same fields as person form (name, description, email, phone, tags, favorite)
+  - Submit creates the person and closes the sheet, list updates
+  - Cancel just closes the sheet
 
 #### Tag Management (`/app/rolodex/tags/page.tsx`)
 - List of all tags with color indicators
