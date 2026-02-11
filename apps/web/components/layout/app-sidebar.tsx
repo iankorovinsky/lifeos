@@ -1,21 +1,16 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import {
-  LogOut,
-  ChevronsUpDown,
-  Users,
-  Plug,
-} from "lucide-react";
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { LogOut, ChevronsUpDown, Users, Plug } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Sidebar,
   SidebarContent,
@@ -29,13 +24,9 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarRail,
-} from "@/components/ui/sidebar";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { createClient } from "@/lib/supabase/client";
+} from '@/components/ui/sidebar';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { createClient } from '@/lib/supabase/client';
 
 interface NavSubItem {
   href: string;
@@ -51,10 +42,10 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    href: "/crm",
-    label: "CRM",
+    href: '/crm',
+    label: 'CRM',
     icon: Users,
-  }
+  },
 ];
 
 interface AppSidebarProps {
@@ -72,7 +63,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push("/");
+    router.push('/');
   };
 
   // Exact match only for active state
@@ -82,7 +73,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
 
   // Check if category should be expanded (not styled as active)
   const isCategoryExpanded = (item: NavItem) => {
-    return pathname === item.href || pathname.startsWith(item.href + "/");
+    return pathname === item.href || pathname.startsWith(item.href + '/');
   };
 
   return (
@@ -92,7 +83,9 @@ export function AppSidebar({ user }: AppSidebarProps) {
           <span className="text-2xl">🌱</span>
           <div className="group-data-[collapsible=icon]:hidden">
             <div className="font-semibold text-sidebar-foreground">lifeos.</div>
-            <div className="text-xs text-sidebar-foreground/60">an operating system for everyday life.</div>
+            <div className="text-xs text-sidebar-foreground/60">
+              an operating system for everyday life.
+            </div>
           </div>
         </Link>
       </SidebarHeader>
@@ -126,15 +119,12 @@ export function AppSidebar({ user }: AppSidebarProps) {
                         <SidebarMenuSub>
                           {item.subItems?.map((subItem) => (
                             <SidebarMenuSubItem key={subItem.href}>
-                              <Link
-                                href={subItem.href}
-                                className="block"
-                              >
+                              <Link href={subItem.href} className="block">
                                 <span
                                   className={`inline-flex px-2 py-1 rounded-md text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ${
                                     isActive(subItem.href)
-                                      ? "bg-sidebar-active text-sidebar-active-foreground"
-                                      : ""
+                                      ? 'bg-sidebar-active text-sidebar-active-foreground'
+                                      : ''
                                   }`}
                                 >
                                   {subItem.label}
@@ -166,10 +156,34 @@ export function AppSidebar({ user }: AppSidebarProps) {
                       <ellipse cx="12" cy="20" rx="2" ry="3" />
                       <ellipse cx="4" cy="12" rx="3" ry="2" />
                       <ellipse cx="20" cy="12" rx="3" ry="2" />
-                      <ellipse cx="6.34" cy="6.34" rx="2" ry="3" transform="rotate(-45 6.34 6.34)" />
-                      <ellipse cx="17.66" cy="17.66" rx="2" ry="3" transform="rotate(-45 17.66 17.66)" />
-                      <ellipse cx="6.34" cy="17.66" rx="2" ry="3" transform="rotate(45 6.34 17.66)" />
-                      <ellipse cx="17.66" cy="6.34" rx="2" ry="3" transform="rotate(45 17.66 6.34)" />
+                      <ellipse
+                        cx="6.34"
+                        cy="6.34"
+                        rx="2"
+                        ry="3"
+                        transform="rotate(-45 6.34 6.34)"
+                      />
+                      <ellipse
+                        cx="17.66"
+                        cy="17.66"
+                        rx="2"
+                        ry="3"
+                        transform="rotate(-45 17.66 17.66)"
+                      />
+                      <ellipse
+                        cx="6.34"
+                        cy="17.66"
+                        rx="2"
+                        ry="3"
+                        transform="rotate(45 6.34 17.66)"
+                      />
+                      <ellipse
+                        cx="17.66"
+                        cy="6.34"
+                        rx="2"
+                        ry="3"
+                        transform="rotate(45 17.66 6.34)"
+                      />
                     </g>
                   </svg>
                 </AvatarFallback>

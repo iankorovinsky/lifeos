@@ -1,12 +1,12 @@
-import { LoginForm } from "@/components/auth/login-form";
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
-import { Metadata } from "next";
-import AsciiBackground from "@/components/layout/ascii-background";
+import { LoginForm } from '@/components/auth/login-form';
+import { createClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
+import { Metadata } from 'next';
+import AsciiBackground from '@/components/layout/ascii-background';
 
 export const metadata: Metadata = {
-  title: "Login | LifeOS",
-  description: "Sign in to your account",
+  title: 'Login | LifeOS',
+  description: 'Sign in to your account',
 };
 
 export default async function LoginPage() {
@@ -16,7 +16,7 @@ export default async function LoginPage() {
   } = await supabase.auth.getUser();
 
   if (user) {
-    redirect("/app");
+    redirect('/app');
   }
 
   return (

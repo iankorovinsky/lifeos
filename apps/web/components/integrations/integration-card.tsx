@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Integration } from "@lifeos/types";
+import { Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Integration } from '@lifeos/types';
 
 interface IntegrationCardProps {
   integration: Integration;
@@ -11,18 +11,14 @@ interface IntegrationCardProps {
   onToggle: () => void;
 }
 
-export function IntegrationCard({
-  integration,
-  onRemove,
-  onToggle,
-}: IntegrationCardProps) {
+export function IntegrationCard({ integration, onRemove, onToggle }: IntegrationCardProps) {
   return (
     <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
       <div className="flex items-center gap-3">
         <div
           className="w-2 h-2 rounded-full"
           style={{
-            backgroundColor: integration.connected ? "#22c55e" : "#94a3b8",
+            backgroundColor: integration.connected ? '#22c55e' : '#94a3b8',
           }}
         />
         <div>

@@ -25,6 +25,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@lifeos/db": "workspace:*",
+        "@lifeos/types": "workspace:*",
         "@prisma/client": "^6.0.0",
         "dotenv": "^16.4.7",
         "express": "^5.0.0",
@@ -62,6 +63,7 @@
         "@radix-ui/react-switch": "^1.1.7",
         "@radix-ui/react-tooltip": "^1.2.8",
         "@supabase/ssr": "^0.8.0",
+        "@supabase/supabase-js": "^2.49.8",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "lucide-react": "^0.562.0",
@@ -97,6 +99,9 @@
     "packages/types": {
       "name": "@lifeos/types",
       "version": "0.0.1",
+      "dependencies": {
+        "@lifeos/db": "workspace:*",
+      },
     },
   },
   "packages": {

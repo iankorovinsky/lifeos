@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { createClient } from "@/lib/supabase/client";
+import { useState } from 'react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { createClient } from '@/lib/supabase/client';
 
 export function SignupForm() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -37,7 +37,7 @@ export function SignupForm() {
       return;
     }
 
-    setMessage("Check your email for a confirmation link.");
+    setMessage('Check your email for a confirmation link.');
     setLoading(false);
   };
 
@@ -80,13 +80,17 @@ export function SignupForm() {
         </div>
         {error && <p className="text-sm text-red-400">{error}</p>}
         {message && <p className="text-sm text-green-300">{message}</p>}
-        <Button type="submit" className="w-full bg-white text-black hover:bg-white/90" disabled={loading}>
-          {loading ? "Creating account..." : "Create Account"}
+        <Button
+          type="submit"
+          className="w-full bg-white text-black hover:bg-white/90"
+          disabled={loading}
+        >
+          {loading ? 'Creating account...' : 'Create Account'}
         </Button>
       </form>
 
       <p className="text-center text-sm text-white">
-        Already have an account?{" "}
+        Already have an account?{' '}
         <Link href="/auth/login" className="font-medium underline text-white">
           Sign in
         </Link>

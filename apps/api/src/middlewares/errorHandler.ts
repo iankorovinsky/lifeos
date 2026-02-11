@@ -1,12 +1,21 @@
 import { Request, Response, NextFunction } from 'express';
+import type { ApiResponse } from '@lifeos/types';
 
 export interface AppError extends Error {
   status?: number;
+  code?: string;
 }
 
 export const errorHandler = (err: AppError, _req: Request, res: Response, _next: NextFunction) => {
   console.error(err);
-  res.status(err.status || 500).json({
-    message: err.message || 'Internal Server Error',
-  });
+  const status = err.status || 500;
+  const response: ApiResponse<null> = {
+    success: false,
+    error: {
+      message: err.message || 'Internal Server Error',
+      status,
+      code: err.code,
+    },
+  };
+  res.status(status).json(response);
 };

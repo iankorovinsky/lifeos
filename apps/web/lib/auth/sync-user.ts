@@ -1,28 +1,11 @@
-import { prisma } from "@lifeos/db";
+import { prisma, User } from '@lifeos/db';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
-// Minimal Supabase user interface for syncing
-interface SupabaseUser {
-  id: string;
-  email?: string;
-  user_metadata?: {
-    full_name?: string;
-    name?: string;
-  };
-}
-
-export interface SyncedUser {
-  id: string;
-  email: string;
-  name: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export async function syncUser(supabaseUser: SupabaseUser): Promise<SyncedUser> {
+export async function syncUser(supabaseUser: SupabaseUser): Promise<User> {
   const { id, email, user_metadata } = supabaseUser;
 
   if (!email) {
-    throw new Error("User email is required for sync");
+    throw new Error('User email is required for sync');
   }
 
   // Extract name from user_metadata (populated by OAuth providers)
@@ -45,7 +28,7 @@ export async function syncUser(supabaseUser: SupabaseUser): Promise<SyncedUser> 
   return user;
 }
 
-export async function getUserById(id: string): Promise<SyncedUser | null> {
+export async function getUserById(id: string): Promise<User | null> {
   return prisma.user.findUnique({
     where: { id },
   });

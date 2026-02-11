@@ -1,11 +1,11 @@
-import { createClient } from "@/lib/supabase/server";
-import { syncUser } from "@/lib/auth/sync-user";
-import { NextResponse } from "next/server";
+import { createClient } from '@/lib/supabase/server';
+import { syncUser } from '@/lib/auth/sync-user';
+import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
-  const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/app";
+  const code = searchParams.get('code');
+  const next = searchParams.get('next') ?? '/app';
 
   if (code) {
     const supabase = await createClient();
@@ -16,12 +16,12 @@ export async function GET(request: Request) {
       try {
         await syncUser(data.user);
       } catch (syncError) {
-        console.error("Failed to sync user to database:", syncError);
+        console.error('Failed to sync user to database:', syncError);
         // Continue anyway - auth succeeded, sync can be retried
       }
 
-      const forwardedHost = request.headers.get("x-forwarded-host");
-      const isLocalEnv = process.env.NODE_ENV === "development";
+      const forwardedHost = request.headers.get('x-forwarded-host');
+      const isLocalEnv = process.env.NODE_ENV === 'development';
 
       if (isLocalEnv) {
         return NextResponse.redirect(`${origin}${next}`);

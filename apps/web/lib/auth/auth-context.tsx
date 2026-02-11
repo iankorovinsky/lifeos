@@ -1,14 +1,9 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useEffect, useState } from "react";
-import { User as SupabaseUser } from "@supabase/supabase-js";
-import { createClient } from "@/lib/supabase/client";
-
-interface AuthUser {
-  id: string;
-  email: string;
-  name: string | null;
-}
+import { createContext, useContext, useEffect, useState } from 'react';
+import { User as SupabaseUser } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase/client';
+import type { AuthUser } from '@lifeos/types';
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -65,17 +60,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   };
 
-  return (
-    <AuthContext.Provider value={{ user, loading, signOut }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ user, loading, signOut }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 }
@@ -83,10 +74,7 @@ export function useAuth() {
 function mapSupabaseUser(supabaseUser: SupabaseUser): AuthUser {
   return {
     id: supabaseUser.id,
-    email: supabaseUser.email || "",
-    name:
-      supabaseUser.user_metadata?.full_name ||
-      supabaseUser.user_metadata?.name ||
-      null,
+    email: supabaseUser.email || '',
+    name: supabaseUser.user_metadata?.full_name || supabaseUser.user_metadata?.name || null,
   };
 }

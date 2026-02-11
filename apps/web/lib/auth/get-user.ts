@@ -1,8 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
-import { getUserById, syncUser } from "./sync-user";
-import type { SyncedUser } from "./sync-user";
+import { createClient } from '@/lib/supabase/server';
+import { getUserById, syncUser } from './sync-user';
+import type { User } from '@lifeos/types';
 
-export async function getCurrentUser(): Promise<SyncedUser | null> {
+export async function getCurrentUser(): Promise<User | null> {
   const supabase = await createClient();
   const {
     data: { user: supabaseUser },

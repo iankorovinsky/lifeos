@@ -14,6 +14,7 @@
     "typecheck": "turbo run typecheck --output-logs=full",
     "lint": "turbo run lint --output-logs=full",
     "test": "turbo run test --parallel --output-logs=full",
+    "ci": "bun run typecheck && bun run lint && bun run format:check && bun run build && bun run test",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\" --ignore-path .gitignore",
     "fmt": "bun format",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\" --ignore-path .gitignore",

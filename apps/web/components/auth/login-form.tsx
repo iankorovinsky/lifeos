@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { createClient } from "@/lib/supabase/client";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { createClient } from '@/lib/supabase/client';
 
 export function LoginForm() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -31,7 +31,7 @@ export function LoginForm() {
       return;
     }
 
-    router.push("/app");
+    router.push('/app');
     router.refresh();
   };
 
@@ -61,13 +61,17 @@ export function LoginForm() {
           />
         </div>
         {error && <p className="text-sm text-red-400">{error}</p>}
-        <Button type="submit" className="w-full bg-white text-black hover:bg-white/90" disabled={loading}>
-          {loading ? "Signing in..." : "Sign in"}
+        <Button
+          type="submit"
+          className="w-full bg-white text-black hover:bg-white/90"
+          disabled={loading}
+        >
+          {loading ? 'Signing in...' : 'Sign in'}
         </Button>
       </form>
 
       <p className="text-center text-sm text-white">
-        Don&apos;t have an account?{" "}
+        Don&apos;t have an account?{' '}
         <Link href="/auth/signup" className="font-medium underline text-white">
           Sign up
         </Link>

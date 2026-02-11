@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -8,22 +8,18 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import {
-  IntegrationType,
-  INTEGRATION_TYPES,
-  INTEGRATION_CONFIGS,
-} from "@lifeos/types";
+} from '@/components/ui/select';
+import { IntegrationType, INTEGRATION_TYPES, INTEGRATION_CONFIGS } from '@lifeos/types';
 
 interface AddIntegrationDialogProps {
   open: boolean;
@@ -31,30 +27,26 @@ interface AddIntegrationDialogProps {
   onAdd: (type: IntegrationType, name: string, email?: string) => void;
 }
 
-export function AddIntegrationDialog({
-  open,
-  onOpenChange,
-  onAdd,
-}: AddIntegrationDialogProps) {
-  const [type, setType] = useState<IntegrationType | "">("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+export function AddIntegrationDialog({ open, onOpenChange, onAdd }: AddIntegrationDialogProps) {
+  const [type, setType] = useState<IntegrationType | ''>('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (type && name) {
       onAdd(type, name, email || undefined);
-      setType("");
-      setName("");
-      setEmail("");
+      setType('');
+      setName('');
+      setEmail('');
     }
   };
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      setType("");
-      setName("");
-      setEmail("");
+      setType('');
+      setName('');
+      setEmail('');
     }
     onOpenChange(open);
   };
@@ -65,17 +57,12 @@ export function AddIntegrationDialog({
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Add Integration</DialogTitle>
-            <DialogDescription>
-              Connect a new account to sync your data.
-            </DialogDescription>
+            <DialogDescription>Connect a new account to sync your data.</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="type">Integration Type</Label>
-              <Select
-                value={type}
-                onValueChange={(value) => setType(value as IntegrationType)}
-              >
+              <Select value={type} onValueChange={(value) => setType(value as IntegrationType)}>
                 <SelectTrigger id="type">
                   <SelectValue placeholder="Select integration type" />
                 </SelectTrigger>
@@ -109,11 +96,7 @@ export function AddIntegrationDialog({
             </div>
           </div>
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => handleOpenChange(false)}
-            >
+            <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={!type || !name}>

@@ -1,6 +1,6 @@
-import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
-import { hasEnvVars } from "../utils";
+import { createServerClient } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
+import { hasEnvVars } from '../utils';
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -24,18 +24,16 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value),
-          );
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           supabaseResponse = NextResponse.next({
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
+            supabaseResponse.cookies.set(name, value, options)
           );
         },
       },
-    },
+    }
   );
 
   // Do not run code between createServerClient and
@@ -51,16 +49,16 @@ export async function updateSession(request: NextRequest) {
 
   // Protected routes: /app/*
   // If user is not authenticated and tries to access /app/*, redirect to home
-  if (pathname.startsWith("/app") && !user) {
+  if (pathname.startsWith('/app') && !user) {
     const url = request.nextUrl.clone();
-    url.pathname = "/";
+    url.pathname = '/';
     return NextResponse.redirect(url);
   }
 
   // If user is authenticated and tries to access auth pages, redirect to /app
-  if (pathname.startsWith("/auth") && user) {
+  if (pathname.startsWith('/auth') && user) {
     const url = request.nextUrl.clone();
-    url.pathname = "/app";
+    url.pathname = '/app';
     return NextResponse.redirect(url);
   }
 

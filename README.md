@@ -9,12 +9,14 @@ lifeos/
 │   └── api/          # Backend API (Bun)
 │
 ├── packages/
-│   └── db/           # Prisma schema & database client
+│   ├── db/           # Prisma schema & database client
+│   └── types/        # Shared TypeScript types
 │
 ├── tools/
 │   └── scripts/      # Repo scripts
 │
 ├── package.json       # Root workspace config
+├── turbo.json         # Turborepo pipeline config
 ├── tsconfig.base.json # Base TypeScript config
 └── .eslintignore      # Linter instructions
 ```
@@ -55,6 +57,14 @@ bun run db:generate           # Generate Prisma client
 bun run db:migrate            # Run database migrations (dev)
 bun run db:studio             # Open Prisma Studio
 bun run db:format             # Format Prisma schema
+```
+
+## CI Checks
+
+CI runs on pull requests to `main`. To run the same checks locally, you can use:
+
+```bash
+bun run ci
 ```
 
 ### API Commands (`apps/api`)
@@ -99,6 +109,7 @@ bun run --filter '@lifeos/db' format         # Format Prisma schema
 ### Packages
 
 - `@lifeos/db` - Prisma schema and database client
+- `@lifeos/types` - Shared TypeScript types
 
 ## Environment Variables
 

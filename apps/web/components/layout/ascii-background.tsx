@@ -1,18 +1,12 @@
-"use client";
+'use client';
 
-import { useState, useEffect, memo } from "react";
-import Video2Ascii from "video2ascii";
+import { useState, memo } from 'react';
+import Video2Ascii from 'video2ascii';
 
 const AsciiBackground = memo(function AsciiBackground() {
-  const [numColumns, setNumColumns] = useState(120);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setNumColumns(Math.floor(window.innerWidth / 10));
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
+  const [numColumns] = useState(() =>
+    typeof window === 'undefined' ? 120 : Math.floor(window.innerWidth / 10)
+  );
 
   return (
     <div className="fixed top-0 left-0 w-screen h-screen z-0">
