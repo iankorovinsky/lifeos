@@ -6,6 +6,7 @@
 - `apps/api/`: Bun + Express API.
 - `packages/db/`: Prisma schema and generated client.
 - `packages/types/`: Shared TypeScript types; define most shared types here.
+- `packages/jobs/`: Trigger.dev background tasks.
 - `tools/scripts/`: Repo utilities (e.g., dev TUI).
 - Root configs: `package.json`, `turbo.json`, `tsconfig.base.json`.
 
@@ -22,6 +23,7 @@
 - `bun run test`: run tests (Jest in `apps/api`).
 - `bun run ci`: local equivalent of CI checks; run after any change to confirm build and checks pass.
 - Database: `bun run db:generate`, `bun run db:migrate`, `bun run db:studio`, `bun run db:format`.
+- Trigger.dev: `bunx trigger.dev login`, `bun run trigger:dev`, `bun run trigger:deploy`.
 
 ## Coding Style & Naming Conventions
 
@@ -49,7 +51,9 @@
 
 - The app is segmented per-user; ensure data access and UI behavior respect user boundaries.
 - Prefer concise, MVP-focused solutions over overcomplicated designs.
+- Trigger.dev tasks live in `packages/jobs/src/` with config in `trigger.config.ts`. Deploys happen on push to `main` and require `TRIGGER_ACCESS_TOKEN`.
 
 ## Configuration Notes
 
 - Root `.env` is loaded by Bun and shared by apps. Add app-specific overrides via `.env.local` if needed.
+- Trigger.dev requires `TRIGGER_SECRET_KEY` for task execution.

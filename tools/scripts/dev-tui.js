@@ -39,7 +39,7 @@ const sidebar = grid.set(0, 0, 1, 2, blessed.list, {
       fg: 'white',
     },
   },
-  items: ['web', 'api', 'db'],
+  items: ['web', 'api', 'trigger', 'db'],
 });
 
 // Right side - log output area (10 columns wide)
@@ -65,6 +65,17 @@ const apiLog = grid.set(0, 2, 1, 10, contrib.log, {
   },
 });
 
+const triggerLog = grid.set(0, 2, 1, 10, contrib.log, {
+  label: ' trigger ',
+  fg: 'yellow',
+  selectedFg: 'yellow',
+  style: {
+    border: {
+      fg: 'yellow',
+    },
+  },
+});
+
 const dbLog = grid.set(0, 2, 1, 10, contrib.log, {
   label: ' db ',
   fg: 'green',
@@ -77,11 +88,12 @@ const dbLog = grid.set(0, 2, 1, 10, contrib.log, {
 });
 
 let currentView = 'web';
-const logs = { web: webLog, api: apiLog, db: dbLog };
+const logs = { web: webLog, api: apiLog, trigger: triggerLog, db: dbLog };
 
 // Show web by default
 webLog.show();
 apiLog.hide();
+triggerLog.hide();
 dbLog.hide();
 
 // Color helper function
@@ -103,6 +115,7 @@ const spawnOpts = { stdio: 'pipe', env: { ...process.env } };
 const processes = {
   web: spawn('bun', ['dev'], { ...spawnOpts, cwd: 'apps/web' }),
   api: spawn('bun', ['dev'], { ...spawnOpts, cwd: 'apps/api' }),
+  trigger: spawn('bunx', ['trigger.dev@latest', 'dev'], spawnOpts),
   db: spawn('bun', ['run', 'generate'], { ...spawnOpts, cwd: 'packages/db' }),
 };
 
@@ -148,6 +161,22 @@ processes.api.stderr.on('data', (data) => {
     .split('\n')
     .filter((line) => line.trim());
   lines.forEach((line) => apiLog.log(colorize(line, 'red')));
+});
+
+processes.trigger.stdout.on('data', (data) => {
+  const lines = data
+    .toString()
+    .split('\n')
+    .filter((line) => line.trim());
+  lines.forEach((line) => triggerLog.log(line));
+});
+
+processes.trigger.stderr.on('data', (data) => {
+  const lines = data
+    .toString()
+    .split('\n')
+    .filter((line) => line.trim());
+  lines.forEach((line) => triggerLog.log(colorize(line, 'red')));
 });
 
 processes.db.stdout.on('data', (data) => {
@@ -231,7 +260,7 @@ sidebar.on('select', (item) => {
 });
 
 // Auto-switch on arrow key navigation
-const items = ['web', 'api', 'db'];
+const items = ['web', 'api', 'trigger', 'db'];
 
 // Wrap the list's move methods to auto-switch
 const originalUp = sidebar.up.bind(sidebar);

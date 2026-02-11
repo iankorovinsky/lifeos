@@ -42,6 +42,18 @@ bun run db:migrate     # Run migrations
 bun run db:studio      # Open Prisma Studio
 ```
 
+### Trigger.dev (Background Jobs)
+
+```bash
+bunx trigger.dev login # First-time CLI login (opens browser)
+bun run trigger:dev    # Start local dev server for tasks
+bun run trigger:deploy # Deploy tasks to Trigger.dev cloud
+```
+
+Tasks are defined in `packages/jobs/src/`. Config is in `trigger.config.ts`.
+
+Auto-deploys on push to `main` via GitHub Actions (requires `TRIGGER_ACCESS_TOKEN` secret).
+
 ### Running Single App/Package
 
 ```bash
@@ -58,6 +70,7 @@ This is a Bun/Turbo monorepo with the following structure:
 - **apps/api**: Express 5 backend API
 - **packages/db**: Prisma 6 schema, client, and migrations (PostgreSQL)
 - **packages/types**: Shared TypeScript types (`@lifeos/types`)
+- **packages/jobs**: Trigger.dev background tasks (`@lifeos/jobs`)
 
 ### Package Dependencies
 
@@ -95,3 +108,8 @@ Create `.env` at repo root. Required variables:
 - `DIRECT_URL` - Direct PostgreSQL connection (for Prisma migrations)
 - `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` - Supabase anon key
+- `TRIGGER_SECRET_KEY` - Trigger.dev secret key (for triggering tasks from app code)
+
+### GitHub Secrets (for CI/CD)
+
+- `TRIGGER_ACCESS_TOKEN` - Trigger.dev Personal Access Token (for deploys)
