@@ -6,7 +6,7 @@ import {
   listPeople,
   softDeletePerson,
   updatePerson,
-} from '../../models/rolodex/person';
+} from '../../services/rolodex/person';
 import type { AuthenticatedRequest } from '../../middlewares/requireUser';
 import { createAppError } from '../../utils/errors';
 

@@ -3,7 +3,7 @@ import type { ApiResponse, Ask, CreateAskRequest, UpdateAskRequest } from '@life
 import type { AuthenticatedRequest } from '../../middlewares/requireUser';
 import { createAppError } from '../../utils/errors';
 import { parseQueryBoolean } from '../../utils/query';
-import { createAsk, deleteAsk, listAsks, updateAsk } from '../../models/rolodex/ask';
+import { createAsk, deleteAsk, listAsks, updateAsk } from '../../services/rolodex/ask';
 
 export const getAsks = async (req: Request, res: Response, next: NextFunction) => {
   const { userId } = req as AuthenticatedRequest;

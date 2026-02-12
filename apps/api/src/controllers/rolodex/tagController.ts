@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from 'express';
 import type { ApiResponse, CreateTagRequest, Tag, UpdateTagRequest } from '@lifeos/types';
 import type { AuthenticatedRequest } from '../../middlewares/requireUser';
 import { createAppError } from '../../utils/errors';
-import { createTag, deleteTag, listTags, updateTag } from '../../models/rolodex/tag';
+import { createTag, deleteTag, listTags, updateTag } from '../../services/rolodex/tag';
 
 export const getTags = async (req: Request, res: Response, next: NextFunction) => {
   const { userId } = req as AuthenticatedRequest;
