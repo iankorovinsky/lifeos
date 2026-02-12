@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { PersonCard } from '@/components/rolodex/person-card';
 import { PersonForm } from '@/components/rolodex/person-form';
 import { TagChip } from '@/components/rolodex/tag-chip';
-import { getPeople, getTags, createPerson, updatePerson } from '@/lib/rolodex/api';
+import { getPeople, getTags, createPerson } from '@/lib/rolodex/api';
 import type { Person, Tag, CreatePersonRequest } from '@lifeos/types';
 
 export default function RolodexPage() {
@@ -78,15 +78,6 @@ export default function RolodexPage() {
       console.error('Failed to create person:', error);
     } finally {
       setIsCreating(false);
-    }
-  };
-
-  const handleToggleFavorite = async (id: string, isFavorite: boolean) => {
-    try {
-      const updated = await updatePerson(id, { isFavorite });
-      setPeople((prev) => prev.map((p) => (p.id === id ? updated : p)));
-    } catch (error) {
-      console.error('Failed to update person:', error);
     }
   };
 
@@ -183,7 +174,7 @@ export default function RolodexPage() {
         ) : filteredPeople.length > 0 ? (
           <div className="space-y-3">
             {filteredPeople.map((person) => (
-              <PersonCard key={person.id} person={person} onToggleFavorite={handleToggleFavorite} />
+              <PersonCard key={person.id} person={person} />
             ))}
           </div>
         ) : (
