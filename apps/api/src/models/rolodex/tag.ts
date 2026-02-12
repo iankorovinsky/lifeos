@@ -1,16 +1,6 @@
 import { prisma } from '@lifeos/db';
-import type { Tag } from '@lifeos/types';
+import type { Tag, CreateTagRequest, UpdateTagRequest } from '@lifeos/types';
 import { createAppError } from '../../utils/errors';
-
-type CreateTagData = {
-  name: string;
-  color?: string;
-};
-
-type UpdateTagData = {
-  name?: string;
-  color?: string;
-};
 
 export const listTags = async (userId: string): Promise<Tag[]> => {
   return prisma.tag.findMany({
@@ -19,7 +9,7 @@ export const listTags = async (userId: string): Promise<Tag[]> => {
   });
 };
 
-export const createTag = async (userId: string, data: CreateTagData): Promise<Tag> => {
+export const createTag = async (userId: string, data: CreateTagRequest): Promise<Tag> => {
   const existing = await prisma.tag.findFirst({
     where: { userId, name: data.name },
   });
@@ -40,7 +30,7 @@ export const createTag = async (userId: string, data: CreateTagData): Promise<Ta
 export const updateTag = async (
   userId: string,
   id: string,
-  data: UpdateTagData
+  data: UpdateTagRequest
 ): Promise<Tag | null> => {
   const existing = await prisma.tag.findFirst({
     where: { id, userId },

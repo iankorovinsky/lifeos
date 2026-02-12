@@ -1,34 +1,6 @@
 import { prisma } from '@lifeos/db';
-import type { Favour } from '@lifeos/types';
-import { createAppError } from '../../utils/errors';
-
-type FavourFilters = {
-  personId?: string;
-  completed?: boolean;
-};
-
-type CreateFavourData = {
-  personId: string;
-  description: string;
-  parentId?: string;
-};
-
-type UpdateFavourData = {
-  description?: string;
-  completed?: boolean;
-  parentId?: string | null;
-};
-
-const ensurePersonOwnedByUser = async (userId: string, personId: string) => {
-  const person = await prisma.person.findFirst({
-    where: { id: personId, userId, deletedAt: null },
-    select: { id: true },
-  });
-
-  if (!person) {
-    throw createAppError('Person not found.', 404);
-  }
-};
+import type { Favour, FavourFilters, CreateFavourRequest, UpdateFavourRequest } from '@lifeos/types';
+import { ensurePersonOwnedByUser } from '../../utils/rolodex';
 
 export const listFavours = async (userId: string, filters: FavourFilters): Promise<Favour[]> => {
   return prisma.favour.findMany({
@@ -41,7 +13,7 @@ export const listFavours = async (userId: string, filters: FavourFilters): Promi
   });
 };
 
-export const createFavour = async (userId: string, data: CreateFavourData): Promise<Favour> => {
+export const createFavour = async (userId: string, data: CreateFavourRequest): Promise<Favour> => {
   await ensurePersonOwnedByUser(userId, data.personId);
 
   return prisma.favour.create({
@@ -56,7 +28,7 @@ export const createFavour = async (userId: string, data: CreateFavourData): Prom
 export const updateFavour = async (
   userId: string,
   id: string,
-  data: UpdateFavourData
+  data: UpdateFavourRequest
 ): Promise<Favour | null> => {
   const existing = await prisma.favour.findFirst({
     where: { id, person: { userId } },

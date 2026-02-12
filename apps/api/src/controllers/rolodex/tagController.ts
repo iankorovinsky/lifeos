@@ -1,12 +1,13 @@
-import type { Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import type { ApiResponse, CreateTagRequest, Tag, UpdateTagRequest } from '@lifeos/types';
 import type { AuthenticatedRequest } from '../../middlewares/requireUser';
 import { createAppError } from '../../utils/errors';
 import { createTag, deleteTag, listTags, updateTag } from '../../models/rolodex/tag';
 
-export const getTags = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const getTags = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req as AuthenticatedRequest;
   try {
-    const tags = await listTags(req.userId);
+    const tags = await listTags(userId);
     const response: ApiResponse<Tag[]> = {
       success: true,
       data: tags,
@@ -17,18 +18,15 @@ export const getTags = async (req: AuthenticatedRequest, res: Response, next: Ne
   }
 };
 
-export const createTagHandler = async (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const createTagHandler = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req as AuthenticatedRequest;
   try {
     const body = req.body as CreateTagRequest;
     if (!body.name) {
       throw createAppError('Tag name is required.', 400);
     }
 
-    const tag = await createTag(req.userId, body);
+    const tag = await createTag(userId, body);
     const response: ApiResponse<Tag> = {
       success: true,
       data: tag,
@@ -39,14 +37,11 @@ export const createTagHandler = async (
   }
 };
 
-export const updateTagHandler = async (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const updateTagHandler = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req as AuthenticatedRequest;
   try {
     const body = req.body as UpdateTagRequest;
-    const tag = await updateTag(req.userId, req.params.id, body);
+    const tag = await updateTag(userId, req.params.id, body);
     if (!tag) {
       throw createAppError('Tag not found.', 404);
     }
@@ -61,13 +56,10 @@ export const updateTagHandler = async (
   }
 };
 
-export const deleteTagHandler = async (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const deleteTagHandler = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req as AuthenticatedRequest;
   try {
-    const tag = await deleteTag(req.userId, req.params.id);
+    const tag = await deleteTag(userId, req.params.id);
     if (!tag) {
       throw createAppError('Tag not found.', 404);
     }

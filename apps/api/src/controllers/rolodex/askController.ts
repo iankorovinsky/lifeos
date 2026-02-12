@@ -1,16 +1,17 @@
-import type { Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import type { ApiResponse, Ask, CreateAskRequest, UpdateAskRequest } from '@lifeos/types';
 import type { AuthenticatedRequest } from '../../middlewares/requireUser';
 import { createAppError } from '../../utils/errors';
 import { parseQueryBoolean } from '../../utils/query';
 import { createAsk, deleteAsk, listAsks, updateAsk } from '../../models/rolodex/ask';
 
-export const getAsks = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const getAsks = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req as AuthenticatedRequest;
   try {
     const personId = typeof req.query.personId === 'string' ? req.query.personId : undefined;
     const completed = parseQueryBoolean(req.query.completed);
 
-    const asks = await listAsks(req.userId, { personId, completed });
+    const asks = await listAsks(userId, { personId, completed });
     const response: ApiResponse<Ask[]> = {
       success: true,
       data: asks,
@@ -21,18 +22,15 @@ export const getAsks = async (req: AuthenticatedRequest, res: Response, next: Ne
   }
 };
 
-export const createAskHandler = async (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const createAskHandler = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req as AuthenticatedRequest;
   try {
     const body = req.body as CreateAskRequest;
     if (!body.personId || !body.description) {
       throw createAppError('personId and description are required.', 400);
     }
 
-    const ask = await createAsk(req.userId, body);
+    const ask = await createAsk(userId, body);
     const response: ApiResponse<Ask> = {
       success: true,
       data: ask,
@@ -43,14 +41,11 @@ export const createAskHandler = async (
   }
 };
 
-export const updateAskHandler = async (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const updateAskHandler = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req as AuthenticatedRequest;
   try {
     const body = req.body as UpdateAskRequest;
-    const ask = await updateAsk(req.userId, req.params.id, body);
+    const ask = await updateAsk(userId, req.params.id, body);
     if (!ask) {
       throw createAppError('Ask not found.', 404);
     }
@@ -65,13 +60,10 @@ export const updateAskHandler = async (
   }
 };
 
-export const deleteAskHandler = async (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const deleteAskHandler = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req as AuthenticatedRequest;
   try {
-    const ask = await deleteAsk(req.userId, req.params.id);
+    const ask = await deleteAsk(userId, req.params.id);
     if (!ask) {
       throw createAppError('Ask not found.', 404);
     }

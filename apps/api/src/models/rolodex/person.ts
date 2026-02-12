@@ -1,6 +1,6 @@
 import type { Prisma } from '@lifeos/db';
 import { prisma } from '@lifeos/db';
-import type { Person } from '@lifeos/types';
+import type { Person, PeopleFilters, CreatePersonRequest, UpdatePersonRequest } from '@lifeos/types';
 import { createAppError } from '../../utils/errors';
 
 const personInclude = {
@@ -27,13 +27,6 @@ const mapPerson = (person: PersonWithRelations): Person => {
   };
 };
 
-type ListPeopleFilters = {
-  search?: string;
-  tagIds?: string[];
-  limit?: number;
-  offset?: number;
-};
-
 const validateTagIds = async (userId: string, tagIds: string[]) => {
   if (tagIds.length === 0) {
     return;
@@ -51,7 +44,7 @@ const validateTagIds = async (userId: string, tagIds: string[]) => {
   }
 };
 
-export const listPeople = async (userId: string, filters: ListPeopleFilters) => {
+export const listPeople = async (userId: string, filters: PeopleFilters) => {
   const where: Prisma.PersonWhereInput = {
     userId,
     deletedAt: null,
@@ -111,16 +104,7 @@ export const getPersonById = async (userId: string, id: string) => {
   return person ? mapPerson(person) : null;
 };
 
-type CreatePersonData = {
-  name: string;
-  description?: string;
-  email?: string;
-  phone?: string;
-  isFavorite?: boolean;
-  tagIds?: string[];
-};
-
-export const createPerson = async (userId: string, data: CreatePersonData) => {
+export const createPerson = async (userId: string, data: CreatePersonRequest) => {
   const tagIds = data.tagIds ?? [];
   await validateTagIds(userId, tagIds);
 
@@ -144,16 +128,7 @@ export const createPerson = async (userId: string, data: CreatePersonData) => {
   return mapPerson(person);
 };
 
-type UpdatePersonData = {
-  name?: string;
-  description?: string;
-  email?: string;
-  phone?: string;
-  isFavorite?: boolean;
-  tagIds?: string[];
-};
-
-export const updatePerson = async (userId: string, id: string, data: UpdatePersonData) => {
+export const updatePerson = async (userId: string, id: string, data: UpdatePersonRequest) => {
   const existing = await prisma.person.findFirst({
     where: { id, userId, deletedAt: null },
     select: { id: true },
