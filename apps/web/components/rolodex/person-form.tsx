@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { TagChip } from './tag-chip';
 import { Star } from 'lucide-react';
-import type { Tag, CreatePersonRequest, UpdatePersonRequest } from '@lifeos/types';
+import type { Tag, CreatePersonRequest } from '@lifeos/types';
 
 interface PersonFormProps {
   initialData?: {

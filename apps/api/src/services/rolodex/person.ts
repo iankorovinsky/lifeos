@@ -1,6 +1,11 @@
 import type { Prisma } from '@lifeos/db';
 import { prisma } from '@lifeos/db';
-import type { Person, PeopleFilters, CreatePersonRequest, UpdatePersonRequest } from '@lifeos/types';
+import type {
+  Person,
+  PeopleFilters,
+  CreatePersonRequest,
+  UpdatePersonRequest,
+} from '@lifeos/types';
 import { createAppError } from '../../utils/errors';
 
 const personInclude = {

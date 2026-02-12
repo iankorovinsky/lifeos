@@ -7,10 +7,9 @@ import type { Person } from '@lifeos/types';
 
 interface PersonCardProps {
   person: Person;
-  onToggleFavorite?: (id: string, isFavorite: boolean) => void;
 }
 
-export function PersonCard({ person, onToggleFavorite }: PersonCardProps) {
+export function PersonCard({ person }: PersonCardProps) {
   const primaryRole = person.roles?.[0];
   const pendingAsks = person.asks?.filter((a) => !a.completed).length || 0;
   const pendingFavours = person.favours?.filter((f) => !f.completed).length || 0;

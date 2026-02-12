@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, Star, Pencil, Trash2, Mail, Phone, Building, Save, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -43,11 +43,15 @@ export default function PersonDetailPage() {
   const [editPhone, setEditPhone] = useState('');
   const [editTagIds, setEditTagIds] = useState<string[]>([]);
 
-  useEffect(() => {
-    loadData();
-  }, [id]);
+  const resetEditForm = useCallback((p: Person) => {
+    setEditName(p.name);
+    setEditDescription(p.description || '');
+    setEditEmail(p.email || '');
+    setEditPhone(p.phone || '');
+    setEditTagIds(p.tags?.map((t) => t.id) || []);
+  }, []);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
       const [personData, tagsData] = await Promise.all([getPersonById(id), getTags()]);
@@ -59,15 +63,11 @@ export default function PersonDetailPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [id, resetEditForm]);
 
-  const resetEditForm = (p: Person) => {
-    setEditName(p.name);
-    setEditDescription(p.description || '');
-    setEditEmail(p.email || '');
-    setEditPhone(p.phone || '');
-    setEditTagIds(p.tags?.map((t) => t.id) || []);
-  };
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handleSave = async () => {
     if (!person) return;
@@ -349,7 +349,6 @@ export default function PersonDetailPage() {
           <h2 className="text-sm font-medium mb-3">Asks (things you asked for)</h2>
           <AsksList
             asks={person.asks || []}
-            personId={id}
             onAdd={handleAddAsk}
             onToggle={handleToggleAsk}
             onDelete={handleDeleteAsk}
@@ -363,7 +362,6 @@ export default function PersonDetailPage() {
           <h2 className="text-sm font-medium mb-3">Favours (things you did for them)</h2>
           <FavoursList
             favours={person.favours || []}
-            personId={id}
             onAdd={handleAddFavour}
             onToggle={handleToggleFavour}
             onDelete={handleDeleteFavour}

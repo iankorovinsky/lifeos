@@ -9,13 +9,12 @@ import type { Favour } from '@lifeos/types';
 
 interface FavoursListProps {
   favours: Favour[];
-  personId: string;
   onAdd: (description: string) => Promise<void>;
   onToggle: (id: string, completed: boolean) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
 }
 
-export function FavoursList({ favours, personId, onAdd, onToggle, onDelete }: FavoursListProps) {
+export function FavoursList({ favours, onAdd, onToggle, onDelete }: FavoursListProps) {
   const [newFavour, setNewFavour] = useState('');
   const [isAdding, setIsAdding] = useState(false);
 

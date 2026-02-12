@@ -1,5 +1,10 @@
 import { prisma } from '@lifeos/db';
-import type { Favour, FavourFilters, CreateFavourRequest, UpdateFavourRequest } from '@lifeos/types';
+import type {
+  Favour,
+  FavourFilters,
+  CreateFavourRequest,
+  UpdateFavourRequest,
+} from '@lifeos/types';
 import { ensurePersonOwnedByUser } from '../../utils/rolodex';
 
 export const listFavours = async (userId: string, filters: FavourFilters): Promise<Favour[]> => {

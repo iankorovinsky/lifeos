@@ -12,7 +12,6 @@ import type {
   CreateFavourRequest,
   UpdateFavourRequest,
   PeopleQueryParams,
-  ApiResponse,
 } from '@lifeos/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;

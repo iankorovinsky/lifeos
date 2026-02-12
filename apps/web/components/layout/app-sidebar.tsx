@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LogOut, ChevronsUpDown, Users, Plug, BookUser } from 'lucide-react';
+import { LogOut, ChevronsUpDown, Plug, BookUser } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,

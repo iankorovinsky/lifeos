@@ -3,7 +3,12 @@ import type { ApiResponse, CreateFavourRequest, Favour, UpdateFavourRequest } fr
 import type { AuthenticatedRequest } from '../../middlewares/requireUser';
 import { createAppError } from '../../utils/errors';
 import { parseQueryBoolean } from '../../utils/query';
-import { createFavour, deleteFavour, listFavours, updateFavour } from '../../services/rolodex/favour';
+import {
+  createFavour,
+  deleteFavour,
+  listFavours,
+  updateFavour,
+} from '../../services/rolodex/favour';
 
 export const getFavours = async (req: Request, res: Response, next: NextFunction) => {
   const { userId } = req as AuthenticatedRequest;

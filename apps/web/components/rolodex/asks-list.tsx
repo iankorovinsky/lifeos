@@ -9,13 +9,12 @@ import type { Ask } from '@lifeos/types';
 
 interface AsksListProps {
   asks: Ask[];
-  personId: string;
   onAdd: (description: string) => Promise<void>;
   onToggle: (id: string, completed: boolean) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
 }
 
-export function AsksList({ asks, personId, onAdd, onToggle, onDelete }: AsksListProps) {
+export function AsksList({ asks, onAdd, onToggle, onDelete }: AsksListProps) {
   const [newAsk, setNewAsk] = useState('');
   const [isAdding, setIsAdding] = useState(false);
 
