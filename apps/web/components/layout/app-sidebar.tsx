@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LogOut, ChevronsUpDown, Users, Plug } from 'lucide-react';
+import { LogOut, ChevronsUpDown, Plug, BookUser } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,9 +42,9 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    href: '/crm',
-    label: 'CRM',
-    icon: Users,
+    href: '/app/rolodex',
+    label: 'Rolodex',
+    icon: BookUser,
   },
 ];
 

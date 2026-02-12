@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { items, Item } from '../models/item';
+import { items, Item } from '../services/item';
 
 export const createItem = (req: Request, res: Response, next: NextFunction) => {
   try {
