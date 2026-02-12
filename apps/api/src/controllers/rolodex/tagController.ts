@@ -4,11 +4,7 @@ import type { AuthenticatedRequest } from '../../middlewares/requireUser';
 import { createAppError } from '../../utils/errors';
 import { createTag, deleteTag, listTags, updateTag } from '../../models/rolodex/tag';
 
-export const getTags = async (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const getTags = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const tags = await listTags(req.userId);
     const response: ApiResponse<Tag[]> = {

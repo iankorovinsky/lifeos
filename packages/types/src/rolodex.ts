@@ -1,125 +1,91 @@
-export interface Person {
-  id: string;
-  userId: string;
-  name: string;
-  description: string | null;
-  email: string | null;
-  phone: string | null;
-  isFavorite: boolean;
+import type {
+  Ask as DbAsk,
+  Favour as DbFavour,
+  Person as DbPerson,
+  PersonNote as DbPersonNote,
+  Role as DbRole,
+  Tag as DbTag,
+} from '@lifeos/db';
+
+export type Role = DbRole;
+export type Tag = DbTag;
+export type PersonNote = DbPersonNote;
+
+export type Ask = DbAsk & {
+  children?: Ask[];
+};
+
+export type Favour = DbFavour & {
+  children?: Favour[];
+};
+
+export type Person = DbPerson & {
   roles: Role[];
   tags: Tag[];
   notes: PersonNote[];
   asks: Ask[];
   favours: Favour[];
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
-}
+};
 
-export interface Role {
-  id: string;
-  personId: string;
-  title: string;
-  company: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
+type PersonFieldInputs = Pick<Person, 'name' | 'description' | 'email' | 'phone' | 'isFavorite'>;
 
-export interface Tag {
-  id: string;
-  userId: string;
-  name: string;
-  color: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface PersonNote {
-  id: string;
-  personId: string;
-  content: string;
-  createdAt: Date;
-}
-
-export interface Ask {
-  id: string;
-  personId: string;
-  parentId: string | null;
-  description: string;
-  completed: boolean;
-  children?: Ask[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface Favour {
-  id: string;
-  personId: string;
-  parentId: string | null;
-  description: string;
-  completed: boolean;
-  children?: Favour[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface CreatePersonRequest {
-  name: string;
-  description?: string;
-  email?: string;
-  phone?: string;
-  isFavorite?: boolean;
+export type CreatePersonRequest = {
+  name: PersonFieldInputs['name'];
+  description?: PersonFieldInputs['description'];
+  email?: PersonFieldInputs['email'];
+  phone?: PersonFieldInputs['phone'];
+  isFavorite?: PersonFieldInputs['isFavorite'];
   tagIds?: string[];
-}
+};
 
-export interface UpdatePersonRequest {
-  name?: string;
-  description?: string;
-  email?: string;
-  phone?: string;
-  isFavorite?: boolean;
+export type UpdatePersonRequest = {
+  name?: PersonFieldInputs['name'];
+  description?: PersonFieldInputs['description'];
+  email?: PersonFieldInputs['email'];
+  phone?: PersonFieldInputs['phone'];
+  isFavorite?: PersonFieldInputs['isFavorite'];
   tagIds?: string[];
-}
+};
 
-export interface CreateRoleRequest {
-  personId: string;
-  title: string;
-  company?: string;
-}
+export type CreateRoleRequest = {
+  personId: Role['personId'];
+  title: Role['title'];
+  company?: Role['company'];
+};
 
-export interface CreateTagRequest {
-  name: string;
-  color?: string;
-}
+export type CreateTagRequest = {
+  name: Tag['name'];
+  color?: Tag['color'];
+};
 
-export interface UpdateTagRequest {
-  name?: string;
-  color?: string;
-}
+export type UpdateTagRequest = {
+  name?: Tag['name'];
+  color?: Tag['color'];
+};
 
-export interface CreateAskRequest {
-  personId: string;
-  description: string;
-  parentId?: string;
-}
+export type CreateAskRequest = {
+  personId: Ask['personId'];
+  description: Ask['description'];
+  parentId?: Ask['parentId'];
+};
 
-export interface CreateFavourRequest {
-  personId: string;
-  description: string;
-  parentId?: string;
-}
+export type CreateFavourRequest = {
+  personId: Favour['personId'];
+  description: Favour['description'];
+  parentId?: Favour['parentId'];
+};
 
-export interface UpdateAskRequest {
-  description?: string;
-  completed?: boolean;
-  parentId?: string | null;
-}
+export type UpdateAskRequest = {
+  description?: Ask['description'];
+  completed?: Ask['completed'];
+  parentId?: Ask['parentId'];
+};
 
-export interface UpdateFavourRequest {
-  description?: string;
-  completed?: boolean;
-  parentId?: string | null;
-}
+export type UpdateFavourRequest = {
+  description?: Favour['description'];
+  completed?: Favour['completed'];
+  parentId?: Favour['parentId'];
+};
 
 export interface PeopleQueryParams {
   search?: string;

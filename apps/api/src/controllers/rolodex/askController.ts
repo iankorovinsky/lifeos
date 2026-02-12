@@ -2,31 +2,13 @@ import type { Response, NextFunction } from 'express';
 import type { ApiResponse, Ask, CreateAskRequest, UpdateAskRequest } from '@lifeos/types';
 import type { AuthenticatedRequest } from '../../middlewares/requireUser';
 import { createAppError } from '../../utils/errors';
+import { parseQueryBoolean } from '../../utils/query';
 import { createAsk, deleteAsk, listAsks, updateAsk } from '../../models/rolodex/ask';
 
-const parseBoolean = (value: string | undefined): boolean | undefined => {
-  if (!value) {
-    return undefined;
-  }
-  if (value === 'true') {
-    return true;
-  }
-  if (value === 'false') {
-    return false;
-  }
-  return undefined;
-};
-
-export const getAsks = async (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const getAsks = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const personId = typeof req.query.personId === 'string' ? req.query.personId : undefined;
-    const completed = typeof req.query.completed === 'string'
-      ? parseBoolean(req.query.completed)
-      : undefined;
+    const completed = parseQueryBoolean(req.query.completed);
 
     const asks = await listAsks(req.userId, { personId, completed });
     const response: ApiResponse<Ask[]> = {

@@ -1,37 +1,14 @@
 import type { Response, NextFunction } from 'express';
-import type {
-  ApiResponse,
-  CreateFavourRequest,
-  Favour,
-  UpdateFavourRequest,
-} from '@lifeos/types';
+import type { ApiResponse, CreateFavourRequest, Favour, UpdateFavourRequest } from '@lifeos/types';
 import type { AuthenticatedRequest } from '../../middlewares/requireUser';
 import { createAppError } from '../../utils/errors';
+import { parseQueryBoolean } from '../../utils/query';
 import { createFavour, deleteFavour, listFavours, updateFavour } from '../../models/rolodex/favour';
 
-const parseBoolean = (value: string | undefined): boolean | undefined => {
-  if (!value) {
-    return undefined;
-  }
-  if (value === 'true') {
-    return true;
-  }
-  if (value === 'false') {
-    return false;
-  }
-  return undefined;
-};
-
-export const getFavours = async (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const getFavours = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const personId = typeof req.query.personId === 'string' ? req.query.personId : undefined;
-    const completed = typeof req.query.completed === 'string'
-      ? parseBoolean(req.query.completed)
-      : undefined;
+    const completed = parseQueryBoolean(req.query.completed);
 
     const favours = await listFavours(req.userId, { personId, completed });
     const response: ApiResponse<Favour[]> = {

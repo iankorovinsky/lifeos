@@ -30,10 +30,7 @@ const ensurePersonOwnedByUser = async (userId: string, personId: string) => {
   }
 };
 
-export const listFavours = async (
-  userId: string,
-  filters: FavourFilters
-): Promise<Favour[]> => {
+export const listFavours = async (userId: string, filters: FavourFilters): Promise<Favour[]> => {
   return prisma.favour.findMany({
     where: {
       person: { userId },
@@ -44,10 +41,7 @@ export const listFavours = async (
   });
 };
 
-export const createFavour = async (
-  userId: string,
-  data: CreateFavourData
-): Promise<Favour> => {
+export const createFavour = async (userId: string, data: CreateFavourData): Promise<Favour> => {
   await ensurePersonOwnedByUser(userId, data.personId);
 
   return prisma.favour.create({
