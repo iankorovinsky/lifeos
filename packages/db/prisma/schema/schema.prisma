@@ -22,7 +22,7 @@ model User {
 }
 
 model Person {
-  id          String   @id @default(uuid())
+  id          String   @id @default(uuid()) @db.Uuid
   userId      String   @db.Uuid
   name        String
   description String?
@@ -48,7 +48,7 @@ model Person {
 }
 
 model Role {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   personId  String   @db.Uuid
   title     String
   company   String?
@@ -64,7 +64,7 @@ model Role {
 }
 
 model Tag {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   userId    String   @db.Uuid
   name      String
   color     String?
@@ -80,7 +80,7 @@ model Tag {
 }
 
 model PersonTag {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   personId  String   @db.Uuid
   tagId     String   @db.Uuid
   createdAt DateTime @default(now())
@@ -95,7 +95,7 @@ model PersonTag {
 }
 
 model PersonNote {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   personId  String   @db.Uuid
   content   String   @db.Text
   createdAt DateTime @default(now())
@@ -107,7 +107,7 @@ model PersonNote {
 }
 
 model Ask {
-  id          String   @id @default(uuid())
+  id          String   @id @default(uuid()) @db.Uuid
   personId    String   @db.Uuid
   parentId    String?  @db.Uuid
   description String
@@ -126,7 +126,7 @@ model Ask {
 }
 
 model Favour {
-  id          String   @id @default(uuid())
+  id          String   @id @default(uuid()) @db.Uuid
   personId    String   @db.Uuid
   parentId    String?  @db.Uuid
   description String
