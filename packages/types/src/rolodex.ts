@@ -27,12 +27,18 @@ export type Person = DbPerson & {
   favours: Favour[];
 };
 
+export type RoleInput = {
+  title: string;
+  company?: string;
+};
+
 export type CreatePersonRequest = {
   name: string;
   description?: string;
   email?: string;
   phone?: string;
   isFavorite?: boolean;
+  roles?: RoleInput[];
   tagIds?: string[];
 };
 
@@ -42,6 +48,7 @@ export type UpdatePersonRequest = {
   email?: string;
   phone?: string;
   isFavorite?: boolean;
+  roles?: RoleInput[];
   tagIds?: string[];
 };
 
@@ -85,6 +92,15 @@ export type UpdateFavourRequest = {
   parentId?: string | null;
 };
 
+export type CreatePersonNoteRequest = {
+  personId: string;
+  content: string;
+};
+
+export type DeletePersonNoteRequest = {
+  id: string;
+};
+
 // Query/filter types
 export interface PeopleQueryParams {
   search?: string;
@@ -108,4 +124,8 @@ export interface AskFilters {
 export interface FavourFilters {
   personId?: string;
   completed?: boolean;
+}
+
+export interface PersonNoteFilters {
+  personId?: string;
 }

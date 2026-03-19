@@ -1,8 +1,10 @@
 import type {
+  ApiResponse,
   Person,
   Tag,
   Ask,
   Favour,
+  PersonNote,
   CreatePersonRequest,
   UpdatePersonRequest,
   CreateTagRequest,
@@ -11,6 +13,7 @@ import type {
   UpdateAskRequest,
   CreateFavourRequest,
   UpdateFavourRequest,
+  CreatePersonNoteRequest,
   PeopleQueryParams,
 } from '@lifeos/types';
 
@@ -27,11 +30,14 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> 
   });
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({ message: 'Request failed' }));
-    throw new Error(error.message || `HTTP ${res.status}`);
+    const error = await res
+      .json()
+      .catch(() => ({ error: { message: 'Request failed' } satisfies ApiResponse<never>['error'] }));
+    throw new Error(error.error?.message || `HTTP ${res.status}`);
   }
 
-  return res.json();
+  const payload = (await res.json()) as ApiResponse<T>;
+  return payload.data as T;
 }
 
 // People
@@ -137,4 +143,21 @@ export async function updateFavour(id: string, data: UpdateFavourRequest): Promi
 
 export async function deleteFavour(id: string): Promise<void> {
   await fetchApi(`/api/rolodex/favours/${id}`, { method: 'DELETE' });
+}
+
+// Notes
+export async function getNotes(personId?: string): Promise<PersonNote[]> {
+  const query = personId ? `?personId=${personId}` : '';
+  return fetchApi<PersonNote[]>(`/api/rolodex/notes${query}`);
+}
+
+export async function createNote(data: CreatePersonNoteRequest): Promise<PersonNote> {
+  return fetchApi<PersonNote>('/api/rolodex/notes', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteNote(id: string): Promise<void> {
+  await fetchApi(`/api/rolodex/notes/${id}`, { method: 'DELETE' });
 }

@@ -1,14 +1,15 @@
 'use client';
 
+import Link from 'next/link';
 import { useState, useEffect, useMemo } from 'react';
-import { Plus, Search, X } from 'lucide-react';
+import { Plus, Search, Tags } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { PersonCard } from '@/components/rolodex/person-card';
 import { PersonForm } from '@/components/rolodex/person-form';
-import { TagChip } from '@/components/rolodex/tag-chip';
-import { getPeople, getTags, createPerson } from '@/lib/rolodex/api';
+import { TagFilter } from '@/components/rolodex/tag-filter';
+import { createPerson, createTag, getPeople, getTags } from '@/lib/rolodex/api';
 import type { Person, Tag, CreatePersonRequest } from '@lifeos/types';
 
 export default function RolodexPage() {
@@ -81,6 +82,12 @@ export default function RolodexPage() {
     }
   };
 
+  const handleCreateTag = async (data: { name: string; color?: string }) => {
+    const newTag = await createTag(data);
+    setTags((prev) => [...prev, newTag].sort((a, b) => a.name.localeCompare(b.name)));
+    return newTag;
+  };
+
   const toggleTagFilter = (tagId: string) => {
     setSelectedTagIds((prev) =>
       prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]
@@ -99,26 +106,35 @@ export default function RolodexPage() {
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-semibold">Rolodex</h1>
-          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-            <SheetTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
-                <SheetTitle>Add Person</SheetTitle>
-              </SheetHeader>
-              <div className="mt-6">
-                <PersonForm
-                  tags={tags}
-                  onSubmit={handleCreatePerson}
-                  onCancel={() => setIsSheetOpen(false)}
-                  isLoading={isCreating}
-                />
-              </div>
-            </SheetContent>
-          </Sheet>
+          <div className="flex items-center gap-2">
+            <Button asChild variant="outline">
+              <Link href="/app/rolodex/tags">
+                <Tags className="h-4 w-4" />
+                Tags
+              </Link>
+            </Button>
+            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+              <SheetTrigger asChild>
+                <Button>
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent>
+                <SheetHeader>
+                  <SheetTitle>Add Person</SheetTitle>
+                </SheetHeader>
+                <div className="mt-6">
+                  <PersonForm
+                    tags={tags}
+                    onSubmit={handleCreatePerson}
+                    onCancel={() => setIsSheetOpen(false)}
+                    onCreateTag={handleCreateTag}
+                    isLoading={isCreating}
+                  />
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
 
         {/* Search and Filters */}
@@ -133,35 +149,12 @@ export default function RolodexPage() {
             />
           </div>
 
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
-                <button
-                  key={tag.id}
-                  onClick={() => toggleTagFilter(tag.id)}
-                  className="focus:outline-none"
-                >
-                  <TagChip
-                    tag={{
-                      ...tag,
-                      color: selectedTagIds.includes(tag.id) ? tag.color : null,
-                    }}
-                  />
-                </button>
-              ))}
-              {hasFilters && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearFilters}
-                  className="h-6 px-2 text-xs"
-                >
-                  <X className="h-3 w-3 mr-1" />
-                  Clear
-                </Button>
-              )}
-            </div>
-          )}
+          <TagFilter
+            tags={tags}
+            selectedTagIds={selectedTagIds}
+            onToggle={toggleTagFilter}
+            onClear={clearFilters}
+          />
         </div>
 
         {/* People List */}

@@ -8,7 +8,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "node tools/scripts/dev-tui.js",
+    "dev": "bun tools/scripts/dev-tui.js",
     "dev:parallel": "turbo run dev --parallel --output-logs=full",
     "build": "turbo run build --output-logs=full",
     "typecheck": "turbo run typecheck --output-logs=full",

@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import { FavourItem } from './favour-item';
 import type { Favour } from '@lifeos/types';
 
 interface FavoursListProps {
@@ -72,38 +72,6 @@ export function FavoursList({ favours, onAdd, onToggle, onDelete }: FavoursListP
       {favours.length === 0 && (
         <p className="text-sm text-muted-foreground italic">No favours yet</p>
       )}
-    </div>
-  );
-}
-
-function FavourItem({
-  favour,
-  onToggle,
-  onDelete,
-}: {
-  favour: Favour;
-  onToggle: (id: string, completed: boolean) => Promise<void>;
-  onDelete: (id: string) => Promise<void>;
-}) {
-  return (
-    <div className="flex items-center gap-2 group">
-      <Checkbox
-        checked={favour.completed}
-        onCheckedChange={(checked) => onToggle(favour.id, checked as boolean)}
-      />
-      <span
-        className={`flex-1 text-sm ${favour.completed ? 'line-through text-muted-foreground' : ''}`}
-      >
-        {favour.description}
-      </span>
-      <Button
-        size="icon"
-        variant="ghost"
-        className="h-6 w-6 opacity-0 group-hover:opacity-100"
-        onClick={() => onDelete(favour.id)}
-      >
-        <Trash2 className="h-3 w-3" />
-      </Button>
     </div>
   );
 }
