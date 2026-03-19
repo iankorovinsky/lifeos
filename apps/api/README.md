@@ -36,7 +36,7 @@ bun install
 bun dev
 ```
 
-The API will be available at [http://localhost:3000](http://localhost:3000) (or the port specified in `PORT` env var).
+The API will be available at [http://localhost:8000](http://localhost:8000) (or the port specified in `PORT` env var).
 
 ## Commands
 
@@ -77,7 +77,7 @@ bun run --filter '@lifeos/api' test:watch   # Run tests in watch mode
 - **App configuration**: `src/app.ts`
 - **Database client**: Import from `@lifeos/db` workspace package
 - **Environment variables**: Loaded from root `.env` file (see root README)
-- **Port**: 3000 (default, configurable via `PORT` env var)
+- **Port**: 8000 (default, configurable via `PORT` env var)
 - **API routes**: `/api/items`
 
 ## Project Structure

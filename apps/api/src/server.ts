@@ -1,6 +1,6 @@
 import app from './app';
 import config from './config/config';
 
-app.listen(config.port, () => {
-  console.log(`Server running on port ${config.port} in ${config.nodeEnv} mode`);
+app.listen(config.port, config.host, () => {
+  console.log(`Server running at http://${config.host}:${config.port} in ${config.nodeEnv} mode`);
 });
