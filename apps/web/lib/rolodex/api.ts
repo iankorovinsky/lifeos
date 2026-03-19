@@ -16,16 +16,28 @@ import type {
   CreatePersonNoteRequest,
   PeopleQueryParams,
 } from '@lifeos/types';
+import { createClient } from '@/lib/supabase/client';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+async function getAuthHeaders(headers?: HeadersInit): Promise<HeadersInit> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  return {
+    'Content-Type': 'application/json',
+    ...(user ? { 'x-user-id': user.id } : {}),
+    ...headers,
+  };
+}
+
 async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const headers = await getAuthHeaders(options?.headers);
   const res = await fetch(`${API_URL}${endpoint}`, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
+    headers,
     credentials: 'include',
   });
 
