@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "bun build ./src/server.ts --outdir ./dist --target bun",
-    "start": "bun ./dist/server.js",
-    "dev": "bun --watch src/server.ts",
+    "build": "bun build \"$(dirname \"$npm_package_json\")/src/server.ts\" --outdir \"$(dirname \"$npm_package_json\")/dist\" --target bun",
+    "start": "bun \"$(dirname \"$npm_package_json\")/dist/server.js\"",
+    "dev": "bun --watch \"$(dirname \"$npm_package_json\")/src/server.ts\"",
     "typecheck": "tsc --noEmit",
     "lint": "eslint 'src/**/*.ts'",
     "test": "jest",

@@ -22,8 +22,8 @@
     "db:migrate": "turbo run migrate:dev --filter=@lifeos/db",
     "db:studio": "turbo run studio --filter=@lifeos/db",
     "db:format": "turbo run format --filter=@lifeos/db",
-    "trigger:dev": "dotenv -e .env -- bunx trigger.dev@latest dev",
-    "trigger:deploy": "dotenv -e .env -- bunx trigger.dev@latest deploy"
+    "trigger:dev": "dotenv -e .env -- bunx trigger.dev@4.3.3 dev",
+    "trigger:deploy": "dotenv -e .env -- bunx trigger.dev@4.3.3 deploy"
   },
   "devDependencies": {
     "@prisma/client": "^6.0.0",

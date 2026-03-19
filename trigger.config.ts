@@ -16,11 +16,4 @@ export default defineConfig({
     },
   },
   dirs: ['packages/jobs/src'],
-
-  // Global lifecycle hooks
-  init: async () => {
-    // Runs before any task executes - connect to DB
-    const { prisma } = await import('@lifeos/db');
-    await prisma.$connect();
-  },
 });

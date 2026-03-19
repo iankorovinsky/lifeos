@@ -115,7 +115,7 @@ const spawnOpts = { stdio: 'pipe', env: { ...process.env } };
 const processes = {
   web: spawn('bun', ['dev'], { ...spawnOpts, cwd: 'apps/web' }),
   api: spawn('bun', ['dev'], { ...spawnOpts, cwd: 'apps/api' }),
-  trigger: spawn('bunx', ['trigger.dev@latest', 'dev'], spawnOpts),
+  trigger: spawn('bunx', ['trigger.dev@4.3.3', 'dev'], spawnOpts),
   db: spawn('bun', ['run', 'generate'], { ...spawnOpts, cwd: 'packages/db' }),
 };
 
