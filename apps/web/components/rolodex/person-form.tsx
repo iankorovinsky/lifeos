@@ -6,9 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { RoleForm } from './role-form';
 import { TagChip } from './tag-chip';
-import { Star } from 'lucide-react';
-import type { Tag, CreatePersonRequest } from '@lifeos/types';
+import { Plus, Star } from 'lucide-react';
+import type { Tag, CreatePersonRequest, RoleInput } from '@lifeos/types';
 
 interface PersonFormProps {
   initialData?: {
@@ -17,21 +18,34 @@ interface PersonFormProps {
     email?: string;
     phone?: string;
     isFavorite?: boolean;
+    roles?: RoleInput[];
     tagIds?: string[];
   };
   tags: Tag[];
   onSubmit: (data: CreatePersonRequest) => Promise<void>;
   onCancel: () => void;
+  onCreateTag?: (data: { name: string; color?: string }) => Promise<Tag>;
   isLoading?: boolean;
 }
 
-export function PersonForm({ initialData, tags, onSubmit, onCancel, isLoading }: PersonFormProps) {
+export function PersonForm({
+  initialData,
+  tags,
+  onSubmit,
+  onCancel,
+  onCreateTag,
+  isLoading,
+}: PersonFormProps) {
   const [name, setName] = useState(initialData?.name || '');
   const [description, setDescription] = useState(initialData?.description || '');
   const [email, setEmail] = useState(initialData?.email || '');
   const [phone, setPhone] = useState(initialData?.phone || '');
   const [isFavorite, setIsFavorite] = useState(initialData?.isFavorite || false);
+  const [roles, setRoles] = useState<RoleInput[]>(initialData?.roles || []);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>(initialData?.tagIds || []);
+  const [newTagName, setNewTagName] = useState('');
+  const [newTagColor, setNewTagColor] = useState('#94a3b8');
+  const [isCreatingTag, setIsCreatingTag] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +55,7 @@ export function PersonForm({ initialData, tags, onSubmit, onCancel, isLoading }:
       email: email || undefined,
       phone: phone || undefined,
       isFavorite,
+      roles,
       tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,
     });
   };
@@ -49,6 +64,25 @@ export function PersonForm({ initialData, tags, onSubmit, onCancel, isLoading }:
     setSelectedTagIds((prev) =>
       prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]
     );
+  };
+
+  const handleCreateTag = async () => {
+    if (!onCreateTag || !newTagName.trim()) {
+      return;
+    }
+
+    setIsCreatingTag(true);
+    try {
+      const tag = await onCreateTag({
+        name: newTagName.trim(),
+        color: newTagColor,
+      });
+      setSelectedTagIds((prev) => (prev.includes(tag.id) ? prev : [...prev, tag.id]));
+      setNewTagName('');
+      setNewTagColor('#94a3b8');
+    } finally {
+      setIsCreatingTag(false);
+    }
   };
 
   return (
@@ -105,6 +139,11 @@ export function PersonForm({ initialData, tags, onSubmit, onCancel, isLoading }:
         </Label>
       </div>
 
+      <div className="space-y-2">
+        <Label>Roles</Label>
+        <RoleForm roles={roles} onChange={setRoles} />
+      </div>
+
       {tags.length > 0 && (
         <div className="space-y-2">
           <Label>Tags</Label>
@@ -127,6 +166,34 @@ export function PersonForm({ initialData, tags, onSubmit, onCancel, isLoading }:
           </div>
         </div>
       )}
+
+      {onCreateTag ? (
+        <div className="space-y-2">
+          <Label>Create tag</Label>
+          <div className="grid grid-cols-[1fr_auto_auto] gap-2">
+            <Input
+              value={newTagName}
+              onChange={(event) => setNewTagName(event.target.value)}
+              placeholder="Tag name"
+            />
+            <Input
+              type="color"
+              value={newTagColor}
+              onChange={(event) => setNewTagColor(event.target.value)}
+              className="w-14 p-1"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCreateTag}
+              disabled={!newTagName.trim() || isCreatingTag}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add
+            </Button>
+          </div>
+        </div>
+      ) : null}
 
       <div className="flex justify-end gap-2 pt-4">
         <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>

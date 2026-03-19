@@ -1,8 +1,10 @@
 import type {
+  ApiResponse,
   Person,
   Tag,
   Ask,
   Favour,
+  PersonNote,
   CreatePersonRequest,
   UpdatePersonRequest,
   CreateTagRequest,
@@ -11,27 +13,45 @@ import type {
   UpdateAskRequest,
   CreateFavourRequest,
   UpdateFavourRequest,
+  CreatePersonNoteRequest,
   PeopleQueryParams,
 } from '@lifeos/types';
+import { createClient } from '@/lib/supabase/client';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+async function getAuthHeaders(headers?: HeadersInit): Promise<HeadersInit> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  return {
+    'Content-Type': 'application/json',
+    ...(user ? { 'x-user-id': user.id } : {}),
+    ...headers,
+  };
+}
+
 async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const headers = await getAuthHeaders(options?.headers);
   const res = await fetch(`${API_URL}${endpoint}`, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
+    headers,
     credentials: 'include',
   });
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({ message: 'Request failed' }));
-    throw new Error(error.message || `HTTP ${res.status}`);
+    const error = await res
+      .json()
+      .catch(() => ({
+        error: { message: 'Request failed' } satisfies ApiResponse<never>['error'],
+      }));
+    throw new Error(error.error?.message || `HTTP ${res.status}`);
   }
 
-  return res.json();
+  const payload = (await res.json()) as ApiResponse<T>;
+  return payload.data as T;
 }
 
 // People
@@ -137,4 +157,21 @@ export async function updateFavour(id: string, data: UpdateFavourRequest): Promi
 
 export async function deleteFavour(id: string): Promise<void> {
   await fetchApi(`/api/rolodex/favours/${id}`, { method: 'DELETE' });
+}
+
+// Notes
+export async function getNotes(personId?: string): Promise<PersonNote[]> {
+  const query = personId ? `?personId=${personId}` : '';
+  return fetchApi<PersonNote[]>(`/api/rolodex/notes${query}`);
+}
+
+export async function createNote(data: CreatePersonNoteRequest): Promise<PersonNote> {
+  return fetchApi<PersonNote>('/api/rolodex/notes', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteNote(id: string): Promise<void> {
+  await fetchApi(`/api/rolodex/notes/${id}`, { method: 'DELETE' });
 }

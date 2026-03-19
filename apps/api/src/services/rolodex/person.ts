@@ -5,6 +5,7 @@ import type {
   PeopleFilters,
   CreatePersonRequest,
   UpdatePersonRequest,
+  RoleInput,
 } from '@lifeos/types';
 import { createAppError } from '../../utils/errors';
 
@@ -48,6 +49,14 @@ const validateTagIds = async (userId: string, tagIds: string[]) => {
     throw createAppError('One or more tags do not belong to the user.', 400);
   }
 };
+
+const normalizeRoles = (roles: RoleInput[] | undefined) =>
+  roles
+    ?.map((role) => ({
+      title: role.title.trim(),
+      company: role.company?.trim() || undefined,
+    }))
+    .filter((role) => role.title.length > 0) ?? [];
 
 export const listPeople = async (userId: string, filters: PeopleFilters) => {
   const where: Prisma.PersonWhereInput = {
@@ -111,6 +120,7 @@ export const getPersonById = async (userId: string, id: string) => {
 
 export const createPerson = async (userId: string, data: CreatePersonRequest) => {
   const tagIds = data.tagIds ?? [];
+  const roles = normalizeRoles(data.roles);
   await validateTagIds(userId, tagIds);
 
   const person = await prisma.person.create({
@@ -121,6 +131,11 @@ export const createPerson = async (userId: string, data: CreatePersonRequest) =>
       email: data.email,
       phone: data.phone,
       isFavorite: data.isFavorite ?? false,
+      roles: roles.length
+        ? {
+            create: roles,
+          }
+        : undefined,
       tags: tagIds.length
         ? {
             create: tagIds.map((tagId) => ({ tagId })),
@@ -144,6 +159,7 @@ export const updatePerson = async (userId: string, id: string, data: UpdatePerso
   }
 
   const tagIds = data.tagIds;
+  const roles = data.roles ? normalizeRoles(data.roles) : undefined;
   if (tagIds) {
     await validateTagIds(userId, tagIds);
   }
@@ -156,6 +172,13 @@ export const updatePerson = async (userId: string, id: string, data: UpdatePerso
       email: data.email,
       phone: data.phone,
       isFavorite: data.isFavorite,
+      roles:
+        roles !== undefined
+          ? {
+              deleteMany: {},
+              create: roles,
+            }
+          : undefined,
       tags: tagIds
         ? {
             deleteMany: {},

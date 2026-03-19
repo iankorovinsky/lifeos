@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Use shadcn/ui** for base components (`npx shadcn@latest add <component>`)
 - **Build reusable components** when patterns repeat; place in `components/`
 - **Define types in `@lifeos/types`** - avoid defining types locally in apps
-- **No `any` or `unknown`** - use proper types; infer from Prisma when possible
+- **No `any` or `unknown` or `as`** - use proper types; infer from Prisma when possible
 - **Data is per-user** - all queries should be scoped to the authenticated user
 - **Run `bun run ci` after changes** to verify typecheck, lint, format, build, and tests pass
 
