@@ -18,7 +18,9 @@ export function AskItem({ ask, onToggle, onDelete }: AskItemProps) {
         checked={ask.completed}
         onCheckedChange={(checked) => onToggle(ask.id, checked as boolean)}
       />
-      <span className={`flex-1 text-sm ${ask.completed ? 'line-through text-muted-foreground' : ''}`}>
+      <span
+        className={`flex-1 text-sm ${ask.completed ? 'line-through text-muted-foreground' : ''}`}
+      >
         {ask.description}
       </span>
       <Button

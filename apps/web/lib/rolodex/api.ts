@@ -44,7 +44,9 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> 
   if (!res.ok) {
     const error = await res
       .json()
-      .catch(() => ({ error: { message: 'Request failed' } satisfies ApiResponse<never>['error'] }));
+      .catch(() => ({
+        error: { message: 'Request failed' } satisfies ApiResponse<never>['error'],
+      }));
     throw new Error(error.error?.message || `HTTP ${res.status}`);
   }
 

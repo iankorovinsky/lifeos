@@ -27,7 +27,10 @@ export function RoleForm({ roles, onChange }: RoleFormProps) {
     <div className="space-y-3">
       {roles.length > 0 ? (
         roles.map((role, index) => (
-          <div key={`${role.title}-${role.company}-${index}`} className="grid grid-cols-[1fr_1fr_auto] gap-2">
+          <div
+            key={`${role.title}-${role.company}-${index}`}
+            className="grid grid-cols-[1fr_1fr_auto] gap-2"
+          >
             <Input
               value={role.title}
               onChange={(event) => updateRole(index, { ...role, title: event.target.value })}

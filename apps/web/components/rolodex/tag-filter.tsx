@@ -22,7 +22,12 @@ export function TagFilter({ tags, selectedTagIds, onToggle, onClear }: TagFilter
   return (
     <div className="flex flex-wrap gap-2">
       {tags.map((tag) => (
-        <button key={tag.id} type="button" onClick={() => onToggle(tag.id)} className="focus:outline-none">
+        <button
+          key={tag.id}
+          type="button"
+          onClick={() => onToggle(tag.id)}
+          className="focus:outline-none"
+        >
           <TagChip
             tag={{
               ...tag,

@@ -71,21 +71,24 @@ export default function PersonDetailPage() {
 
   const handleDeleteAsk = async (askId: string) => {
     await deleteAsk(askId);
-    setPerson((prev) => (prev ? { ...prev, asks: prev.asks.filter((ask) => ask.id !== askId) } : null));
+    setPerson((prev) =>
+      prev ? { ...prev, asks: prev.asks.filter((ask) => ask.id !== askId) } : null
+    );
   };
 
   const handleAddFavour = async (description: string) => {
     const newFavour = await createFavour({ personId: id, description });
-    setPerson((prev) =>
-      prev ? { ...prev, favours: [...(prev.favours || []), newFavour] } : null
-    );
+    setPerson((prev) => (prev ? { ...prev, favours: [...(prev.favours || []), newFavour] } : null));
   };
 
   const handleToggleFavour = async (favourId: string, completed: boolean) => {
     const updated = await updateFavour(favourId, { completed });
     setPerson((prev) =>
       prev
-        ? { ...prev, favours: prev.favours.map((favour) => (favour.id === favourId ? updated : favour)) }
+        ? {
+            ...prev,
+            favours: prev.favours.map((favour) => (favour.id === favourId ? updated : favour)),
+          }
         : null
     );
   };
@@ -104,7 +107,9 @@ export default function PersonDetailPage() {
 
   const handleDeleteNote = async (noteId: string) => {
     await deleteNote(noteId);
-    setPerson((prev) => (prev ? { ...prev, notes: prev.notes.filter((note) => note.id !== noteId) } : null));
+    setPerson((prev) =>
+      prev ? { ...prev, notes: prev.notes.filter((note) => note.id !== noteId) } : null
+    );
   };
 
   if (isLoading) {

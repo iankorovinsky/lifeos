@@ -12,7 +12,15 @@ import { FavoursList } from './favours-list';
 import { PersonNotes } from './person-notes';
 import { RoleForm } from './role-form';
 import { TagChip } from './tag-chip';
-import type { Ask, Favour, Person, PersonNote, RoleInput, Tag, UpdatePersonRequest } from '@lifeos/types';
+import type {
+  Ask,
+  Favour,
+  Person,
+  PersonNote,
+  RoleInput,
+  Tag,
+  UpdatePersonRequest,
+} from '@lifeos/types';
 
 interface PersonDetailProps {
   person: Person;
@@ -66,7 +74,9 @@ export function PersonDetail({
   }, [person]);
 
   const toggleEditTag = (tagId: string) => {
-    setEditTagIds((prev) => (prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]));
+    setEditTagIds((prev) =>
+      prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]
+    );
   };
 
   const handleSave = async () => {
@@ -113,7 +123,11 @@ export function PersonDetail({
 
           <div className="flex-1">
             {isEditing ? (
-              <Input value={editName} onChange={(event) => setEditName(event.target.value)} className="text-xl font-semibold" />
+              <Input
+                value={editName}
+                onChange={(event) => setEditName(event.target.value)}
+                className="text-xl font-semibold"
+              />
             ) : (
               <h1 className="text-2xl font-semibold">{person.name}</h1>
             )}
@@ -121,7 +135,9 @@ export function PersonDetail({
 
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" onClick={handleToggleFavorite}>
-              <Star className={`h-4 w-4 ${person.isFavorite ? 'fill-yellow-400 text-yellow-400' : ''}`} />
+              <Star
+                className={`h-4 w-4 ${person.isFavorite ? 'fill-yellow-400 text-yellow-400' : ''}`}
+              />
             </Button>
 
             {isEditing ? (
@@ -179,17 +195,25 @@ export function PersonDetail({
             </>
           ) : (
             <>
-              {person.description ? <p className="text-muted-foreground">{person.description}</p> : null}
+              {person.description ? (
+                <p className="text-muted-foreground">{person.description}</p>
+              ) : null}
 
               <div className="flex flex-wrap gap-4 text-sm">
                 {person.email ? (
-                  <a href={`mailto:${person.email}`} className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
+                  <a
+                    href={`mailto:${person.email}`}
+                    className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+                  >
                     <Mail className="h-4 w-4" />
                     {person.email}
                   </a>
                 ) : null}
                 {person.phone ? (
-                  <a href={`tel:${person.phone}`} className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
+                  <a
+                    href={`tel:${person.phone}`}
+                    className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+                  >
                     <Phone className="h-4 w-4" />
                     {person.phone}
                   </a>
@@ -206,7 +230,10 @@ export function PersonDetail({
           ) : person.roles.length > 0 ? (
             <div className="space-y-2">
               {person.roles.map((role) => (
-                <div key={role.id} className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div
+                  key={role.id}
+                  className="flex items-center gap-2 text-sm text-muted-foreground"
+                >
                   <Building className="h-4 w-4" />
                   <span>
                     {role.title}
@@ -225,8 +252,15 @@ export function PersonDetail({
           {isEditing ? (
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (
-                <button key={tag.id} type="button" onClick={() => toggleEditTag(tag.id)} className="focus:outline-none">
-                  <TagChip tag={{ ...tag, color: editTagIds.includes(tag.id) ? tag.color : null }} />
+                <button
+                  key={tag.id}
+                  type="button"
+                  onClick={() => toggleEditTag(tag.id)}
+                  className="focus:outline-none"
+                >
+                  <TagChip
+                    tag={{ ...tag, color: editTagIds.includes(tag.id) ? tag.color : null }}
+                  />
                 </button>
               ))}
             </div>
@@ -245,14 +279,23 @@ export function PersonDetail({
 
         <div className="mb-6">
           <h2 className="mb-3 text-sm font-medium">Notes</h2>
-          <PersonNotes notes={person.notes || ([] as PersonNote[])} onAdd={onAddNote} onDelete={onDeleteNote} />
+          <PersonNotes
+            notes={person.notes || ([] as PersonNote[])}
+            onAdd={onAddNote}
+            onDelete={onDeleteNote}
+          />
         </div>
 
         <Separator className="my-6" />
 
         <div className="mb-6">
           <h2 className="mb-3 text-sm font-medium">Asks (things you asked for)</h2>
-          <AsksList asks={person.asks || ([] as Ask[])} onAdd={onAddAsk} onToggle={onToggleAsk} onDelete={onDeleteAsk} />
+          <AsksList
+            asks={person.asks || ([] as Ask[])}
+            onAdd={onAddAsk}
+            onToggle={onToggleAsk}
+            onDelete={onDeleteAsk}
+          />
         </div>
 
         <Separator className="my-6" />

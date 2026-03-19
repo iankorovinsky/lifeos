@@ -1,5 +1,9 @@
 import { Router } from 'express';
-import { createNoteHandler, deleteNoteHandler, getNotes } from '../../controllers/rolodex/noteController';
+import {
+  createNoteHandler,
+  deleteNoteHandler,
+  getNotes,
+} from '../../controllers/rolodex/noteController';
 import { requireUser } from '../../middlewares/requireUser';
 
 const router = Router();

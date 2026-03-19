@@ -4,8 +4,8 @@ import rolodexRoutes from './routes/rolodex';
 import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
-const allowedOrigins = (process.env.CORS_ORIGIN?.split(',') ?? ['http://localhost:3000']).map((origin) =>
-  origin.trim()
+const allowedOrigins = (process.env.CORS_ORIGIN?.split(',') ?? ['http://localhost:3000']).map(
+  (origin) => origin.trim()
 );
 
 app.use((req, res, next) => {

@@ -41,7 +41,12 @@ export function PersonNotes({ notes, onAdd, onDelete }: PersonNotesProps) {
           disabled={isSaving}
         />
         <div className="flex justify-end">
-          <Button type="button" size="sm" onClick={handleAdd} disabled={!content.trim() || isSaving}>
+          <Button
+            type="button"
+            size="sm"
+            onClick={handleAdd}
+            disabled={!content.trim() || isSaving}
+          >
             <Plus className="mr-2 h-4 w-4" />
             Add note
           </Button>
@@ -56,7 +61,13 @@ export function PersonNotes({ notes, onAdd, onDelete }: PersonNotesProps) {
                 <p className="text-xs text-muted-foreground">
                   {new Date(note.createdAt).toLocaleDateString()}
                 </p>
-                <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={() => onDelete(note.id)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={() => onDelete(note.id)}
+                >
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>

@@ -63,7 +63,11 @@ export default function RolodexTagsPage() {
       name: editName.trim(),
       color: editColor,
     });
-    setTags((prev) => prev.map((tag) => (tag.id === id ? updated : tag)).sort((a, b) => a.name.localeCompare(b.name)));
+    setTags((prev) =>
+      prev
+        .map((tag) => (tag.id === id ? updated : tag))
+        .sort((a, b) => a.name.localeCompare(b.name))
+    );
     cancelEdit();
   };
 
@@ -90,7 +94,11 @@ export default function RolodexTagsPage() {
         <div className="mb-6 rounded-lg border p-4">
           <h2 className="mb-3 text-sm font-medium">Create tag</h2>
           <div className="grid grid-cols-[1fr_auto_auto] gap-2">
-            <Input value={newName} onChange={(event) => setNewName(event.target.value)} placeholder="Tag name" />
+            <Input
+              value={newName}
+              onChange={(event) => setNewName(event.target.value)}
+              placeholder="Tag name"
+            />
             <Input
               type="color"
               value={newColor}
@@ -124,14 +132,22 @@ export default function RolodexTagsPage() {
 
                   {isEditing ? (
                     <>
-                      <Input value={editName} onChange={(event) => setEditName(event.target.value)} className="flex-1" />
+                      <Input
+                        value={editName}
+                        onChange={(event) => setEditName(event.target.value)}
+                        className="flex-1"
+                      />
                       <Input
                         type="color"
                         value={editColor}
                         onChange={(event) => setEditColor(event.target.value)}
                         className="w-14 p-1"
                       />
-                      <Button size="icon" onClick={() => handleSave(tag.id)} disabled={!editName.trim()}>
+                      <Button
+                        size="icon"
+                        onClick={() => handleSave(tag.id)}
+                        disabled={!editName.trim()}
+                      >
                         <Save className="h-4 w-4" />
                       </Button>
                       <Button size="icon" variant="ghost" onClick={cancelEdit}>
@@ -142,7 +158,9 @@ export default function RolodexTagsPage() {
                     <>
                       <div className="flex-1">
                         <p className="font-medium">{tag.name}</p>
-                        <p className="text-xs text-muted-foreground">{tag.color || 'No color set'}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {tag.color || 'No color set'}
+                        </p>
                       </div>
                       <Button size="icon" variant="ghost" onClick={() => startEdit(tag)}>
                         <Pencil className="h-4 w-4" />
