@@ -75,6 +75,20 @@ export default function PersonDetailPage() {
     );
   };
 
+  const handleUpdateRequest = async (requestId: string, description: string) => {
+    const updated = await updateRequest(requestId, { description });
+    setPerson((prev) =>
+      prev
+        ? {
+            ...prev,
+            requests: prev.requests.map((request) =>
+              request.id === requestId ? updated : request
+            ),
+          }
+        : null
+    );
+  };
+
   const handleDeleteRequest = async (requestId: string) => {
     await deleteRequest(requestId);
     setPerson((prev) =>
@@ -128,6 +142,7 @@ export default function PersonDetailPage() {
       onUpdate={handleUpdate}
       onDelete={handleDelete}
       onAddRequest={handleAddRequest}
+      onUpdateRequest={handleUpdateRequest}
       onToggleRequest={handleToggleRequest}
       onDeleteRequest={handleDeleteRequest}
       onAddNote={handleAddNote}

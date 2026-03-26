@@ -14,6 +14,7 @@ import {
 import { PersonForm, type PersonFormValues } from '@/components/rolodex/person-form';
 import { createPerson, createTag, getTags } from '@/lib/rolodex/api';
 import type { CreatePersonRequest, Person, Tag } from '@lifeos/types';
+import { Separator } from '@radix-ui/react-separator';
 
 interface AddPersonSheetProps {
   tags: Tag[];
@@ -116,21 +117,19 @@ export function AddPersonSheet({ tags, onPersonCreated }: AddPersonSheetProps) {
       <SheetTrigger asChild>
         <Button className="gap-2">
           <Plus className="h-4 w-4" />
-          Add person
         </Button>
       </SheetTrigger>
       <SheetContent className="w-full gap-0 overflow-hidden border-l bg-background p-0 sm:max-w-xl">
-        <SheetHeader className="border-b bg-white px-6 py-5 pr-14">
-          <SheetTitle className="text-xl">Add person</SheetTitle>
-          <SheetDescription className="max-w-md text-sm">
-            Add the basics now. You can fill in the rest later.
-          </SheetDescription>
+        <SheetHeader className=" bg-white px-6 py-5 pr-14">
+          <SheetTitle className="text-xl">Add Person</SheetTitle>
         </SheetHeader>
+        <Separator />
         <div className="min-h-0 flex-1 overflow-y-auto">
           <PersonForm
             tags={availableTags}
             onSubmit={handleCreatePerson}
             onCancel={() => setIsOpen(false)}
+            onTagCreated={(tag) => setAvailableTags((prev) => [...prev, tag].sort((a, b) => a.name.localeCompare(b.name)))}
             isLoading={isCreating}
           />
         </div>

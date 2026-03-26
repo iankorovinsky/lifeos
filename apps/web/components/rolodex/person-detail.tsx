@@ -40,6 +40,7 @@ interface PersonDetailProps {
   onUpdate: (data: UpdatePersonRequest) => Promise<Person>;
   onDelete: () => Promise<void>;
   onAddRequest: (description: string, type: 'ASK' | 'FAVOUR') => Promise<void>;
+  onUpdateRequest: (id: string, description: string) => Promise<void>;
   onToggleRequest: (id: string, completed: boolean) => Promise<void>;
   onDeleteRequest: (id: string) => Promise<void>;
   onAddNote: (content: string) => Promise<void>;
@@ -53,6 +54,7 @@ export function PersonDetail({
   onUpdate,
   onDelete,
   onAddRequest,
+  onUpdateRequest,
   onToggleRequest,
   onDeleteRequest,
   onAddNote,
@@ -438,6 +440,7 @@ export function PersonDetail({
             placeholder="Add something you asked for..."
             emptyMessage="No asks yet"
             onAdd={(description) => onAddRequest(description, 'ASK')}
+            onUpdate={onUpdateRequest}
             onToggle={onToggleRequest}
             onDelete={onDeleteRequest}
           />
@@ -453,6 +456,7 @@ export function PersonDetail({
             placeholder="Add a favour you did..."
             emptyMessage="No favours yet"
             onAdd={(description) => onAddRequest(description, 'FAVOUR')}
+            onUpdate={onUpdateRequest}
             onToggle={onToggleRequest}
             onDelete={onDeleteRequest}
           />

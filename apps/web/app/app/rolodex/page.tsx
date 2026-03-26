@@ -103,8 +103,8 @@ export default function RolodexPage() {
           </div>
         </div>
 
-        {/* Search and Filters */}
-        <div className="space-y-3 mb-6">
+        {/* Search */}
+        <div className="mb-6">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -114,13 +114,6 @@ export default function RolodexPage() {
               className="pl-9"
             />
           </div>
-
-          <TagFilter
-            tags={tags}
-            selectedTagIds={selectedTagIds}
-            onToggle={toggleTagFilter}
-            onClear={clearFilters}
-          />
         </div>
 
         {/* People List */}
@@ -139,9 +132,7 @@ export default function RolodexPage() {
         ) : (
           <div className="text-center py-12">
             <p className="text-muted-foreground">
-              {hasFilters
-                ? 'No people match your filters'
-                : 'No people yet. Add someone to get started!'}
+              {hasFilters ? 'No people match your search' : 'No people yet. Add someone to get started!'}
             </p>
           </div>
         )}

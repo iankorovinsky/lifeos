@@ -47,13 +47,12 @@ export function PersonNotes({ notes, onAdd, onDelete }: PersonNotesProps) {
             onClick={handleAdd}
             disabled={!content.trim() || isSaving}
           >
-            <Plus className="mr-2 h-4 w-4" />
-            Add note
+            <Plus className="h-4 w-4" />
           </Button>
         </div>
       </div>
 
-      {notes.length > 0 ? (
+      {notes.length > 0 && (
         <div className="space-y-2">
           {notes.map((note) => (
             <div key={note.id} className="rounded-lg border p-3">
@@ -75,8 +74,6 @@ export function PersonNotes({ notes, onAdd, onDelete }: PersonNotesProps) {
             </div>
           ))}
         </div>
-      ) : (
-        <p className="text-sm italic text-muted-foreground">No notes yet</p>
       )}
     </div>
   );

@@ -1,9 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Star } from 'lucide-react';
+import { Loader2, CheckIcon, Star, Trash2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CreatableMultiSelect } from '@/components/ui/creatable-multi-select';
+import { ComboboxCreatable } from '@/components/ui/combobox-creatable';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
@@ -39,10 +39,18 @@ interface PersonFormProps {
   tags: Tag[];
   onSubmit: (data: PersonFormValues) => Promise<void>;
   onCancel: () => void;
+  onTagCreated?: (tag: Tag) => void;
   isLoading?: boolean;
 }
 
-export function PersonForm({ initialData, tags, onSubmit, onCancel, isLoading }: PersonFormProps) {
+export function PersonForm({
+  initialData,
+  tags,
+  onSubmit,
+  onCancel,
+  onTagCreated,
+  isLoading,
+}: PersonFormProps) {
   const [firstName, setFirstName] = useState(initialData?.firstName || '');
   const [lastName, setLastName] = useState(initialData?.lastName || '');
   const [description, setDescription] = useState(initialData?.description || '');
@@ -89,12 +97,11 @@ export function PersonForm({ initialData, tags, onSubmit, onCancel, isLoading }:
     <form onSubmit={handleSubmit} className="flex min-h-full flex-col bg-background">
       <div className="space-y-6 px-6 py-6">
         <section className="space-y-4">
-          <h3 className="text-sm font-medium text-foreground">Identity</h3>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="first-name">
-                First name <span className="text-destructive">*</span>
+              <Label htmlFor="first-name" className="inline-flex items-baseline gap-1">
+                First Name<span className="text-destructive">*</span>
               </Label>
               <Input
                 id="first-name"
@@ -106,7 +113,7 @@ export function PersonForm({ initialData, tags, onSubmit, onCancel, isLoading }:
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="last-name">Last name</Label>
+              <Label htmlFor="last-name">Last Name</Label>
               <Input
                 id="last-name"
                 value={lastName}
@@ -117,12 +124,12 @@ export function PersonForm({ initialData, tags, onSubmit, onCancel, isLoading }:
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">Tagline</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="How do you know this person?"
+              placeholder="Co-Director @ Hack the North, Student @ University of Waterloo"
               rows={3}
             />
           </div>
@@ -141,10 +148,7 @@ export function PersonForm({ initialData, tags, onSubmit, onCancel, isLoading }:
           </div>
         </section>
 
-        <Separator />
-
         <section className="space-y-4">
-          <h3 className="text-sm font-medium text-foreground">Contact</h3>
 
           <div className="space-y-2">
             <Label htmlFor="emails">Emails</Label>
@@ -155,17 +159,16 @@ export function PersonForm({ initialData, tags, onSubmit, onCancel, isLoading }:
               placeholder={'john@example.com\njohn@work.com'}
               rows={3}
             />
-            <p className="text-xs text-muted-foreground">One per line or separated by commas.</p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="phone-number">Phone number</Label>
+              <Label htmlFor="phone-number">Phone Number</Label>
               <Input
                 id="phone-number"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
-                placeholder="+1 555 123 4567"
+                placeholder="+1 416 123 4567"
               />
             </div>
 
@@ -175,7 +178,7 @@ export function PersonForm({ initialData, tags, onSubmit, onCancel, isLoading }:
                 id="linkedin-url"
                 value={linkedinUrl}
                 onChange={(e) => setLinkedinUrl(e.target.value)}
-                placeholder="https://linkedin.com/in/johndoe"
+                placeholder="https://linkedin.com/in/ian-korovinsky"
               />
             </div>
           </div>
@@ -186,31 +189,29 @@ export function PersonForm({ initialData, tags, onSubmit, onCancel, isLoading }:
               id="x-url"
               value={xUrl}
               onChange={(e) => setXUrl(e.target.value)}
-              placeholder="https://x.com/johndoe"
+              placeholder="https://x.com/ikorovinsky"
             />
           </div>
         </section>
 
-        <Separator />
-
         <section className="space-y-3">
-          <div className="space-y-1">
-            <h3 className="text-sm font-medium text-foreground">Tags</h3>
-            <p className="text-sm text-muted-foreground">
-              Search existing tags or add a new one if it does not exist yet.
-            </p>
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="tags">Tags</Label>
-            <CreatableMultiSelect
+            <ComboboxCreatable
               options={tagOptions}
               values={selectedTagNames}
               onChange={setSelectedTagNames}
-              placeholder="Search tags"
-              searchPlaceholder="Search tags..."
-              emptyText="No tags found."
-              createLabel={(query) => `Add tag "${query}"`}
+              onCreateNew={
+                onTagCreated
+                  ? async (name) => {
+                      const { createTag } = await import('@/lib/rolodex/api');
+                      const newTag = await createTag({ name });
+                      onTagCreated(newTag);
+                    }
+                  : undefined
+              }
+              placeholder="Search tags..."
+              createLabel={(query) => `Create "${query}"`}
             />
           </div>
         </section>
@@ -221,10 +222,14 @@ export function PersonForm({ initialData, tags, onSubmit, onCancel, isLoading }:
           <p className="text-sm text-muted-foreground">You can edit the details later.</p>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-              Cancel
+              <Trash2Icon className="h-4 w-4" />
             </Button>
             <Button type="submit" disabled={!firstName.trim() || isLoading}>
-              {isLoading ? 'Saving...' : 'Save person'}
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <CheckIcon className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </div>
