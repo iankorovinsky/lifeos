@@ -10,9 +10,11 @@ interface PersonCardProps {
 }
 
 export function PersonCard({ person }: PersonCardProps) {
+  const fullName = [person.firstName, person.lastName].filter(Boolean).join(' ');
   const primaryRole = person.roles?.[0];
-  const pendingAsks = person.asks?.filter((a) => !a.completed).length || 0;
-  const pendingFavours = person.favours?.filter((f) => !f.completed).length || 0;
+  const pendingAsks = person.requests?.filter((r) => r.type === 'ASK' && !r.completed).length || 0;
+  const pendingFavours =
+    person.requests?.filter((r) => r.type === 'FAVOUR' && !r.completed).length || 0;
 
   return (
     <Link
@@ -22,7 +24,7 @@ export function PersonCard({ person }: PersonCardProps) {
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="font-medium truncate">{person.name}</h3>
+            <h3 className="font-medium truncate">{fullName}</h3>
             {person.isFavorite && (
               <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 flex-shrink-0" />
             )}

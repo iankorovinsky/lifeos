@@ -71,8 +71,8 @@ export const createPersonHandler = async (req: Request, res: Response, next: Nex
   const { userId } = req as AuthenticatedRequest;
   try {
     const body = req.body as CreatePersonRequest;
-    if (!body.name) {
-      throw createAppError('Name is required.', 400);
+    if (!body.firstName?.trim()) {
+      throw createAppError('First name is required.', 400);
     }
 
     const person = await createPerson(userId, body);

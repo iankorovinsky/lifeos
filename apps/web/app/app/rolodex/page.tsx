@@ -1,16 +1,13 @@
 'use client';
 
-import Link from 'next/link';
 import { useState, useEffect, useMemo } from 'react';
-import { Plus, Search, Tags } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { AddPersonSheet } from '@/components/rolodex/add-person-sheet';
 import { PersonCard } from '@/components/rolodex/person-card';
-import { PersonForm } from '@/components/rolodex/person-form';
 import { TagFilter } from '@/components/rolodex/tag-filter';
-import { createPerson, createTag, getPeople, getTags } from '@/lib/rolodex/api';
-import type { Person, Tag, CreatePersonRequest } from '@lifeos/types';
+import { getPeople, getTags } from '@/lib/rolodex/api';
+import type { Person, Tag } from '@lifeos/types';
 
 export default function RolodexPage() {
   const [people, setPeople] = useState<Person[]>([]);
@@ -18,8 +15,6 @@ export default function RolodexPage() {
   const [search, setSearch] = useState('');
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -46,8 +41,12 @@ export default function RolodexPage() {
       const query = search.toLowerCase();
       result = result.filter(
         (p) =>
-          p.name.toLowerCase().includes(query) ||
+          [p.firstName, p.lastName].filter(Boolean).join(' ').toLowerCase().includes(query) ||
           p.description?.toLowerCase().includes(query) ||
+          p.phoneNumber?.toLowerCase().includes(query) ||
+          p.linkedinUrl?.toLowerCase().includes(query) ||
+          p.xUrl?.toLowerCase().includes(query) ||
+          p.emails?.some((email) => email.email.toLowerCase().includes(query)) ||
           p.roles?.some(
             (r) => r.title.toLowerCase().includes(query) || r.company?.toLowerCase().includes(query)
           )
@@ -63,29 +62,22 @@ export default function RolodexPage() {
     result = [...result].sort((a, b) => {
       if (a.isFavorite && !b.isFavorite) return -1;
       if (!a.isFavorite && b.isFavorite) return 1;
-      return a.name.localeCompare(b.name);
+      return [a.firstName, a.lastName]
+        .filter(Boolean)
+        .join(' ')
+        .localeCompare([b.firstName, b.lastName].filter(Boolean).join(' '));
     });
 
     return result;
   }, [people, search, selectedTagIds]);
 
-  const handleCreatePerson = async (data: CreatePersonRequest) => {
-    setIsCreating(true);
-    try {
-      const newPerson = await createPerson(data);
-      setPeople((prev) => [...prev, newPerson]);
-      setIsSheetOpen(false);
-    } catch (error) {
-      console.error('Failed to create person:', error);
-    } finally {
-      setIsCreating(false);
-    }
-  };
-
-  const handleCreateTag = async (data: { name: string; color?: string }) => {
-    const newTag = await createTag(data);
-    setTags((prev) => [...prev, newTag].sort((a, b) => a.name.localeCompare(b.name)));
-    return newTag;
+  const handlePersonCreated = (person: Person) => {
+    setPeople((prev) => [...prev, person]);
+    setTags((prev) => {
+      const nextTags = new Map(prev.map((tag) => [tag.id, tag]));
+      person.tags.forEach((tag) => nextTags.set(tag.id, tag));
+      return Array.from(nextTags.values()).sort((a, b) => a.name.localeCompare(b.name));
+    });
   };
 
   const toggleTagFilter = (tagId: string) => {
@@ -107,33 +99,7 @@ export default function RolodexPage() {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-semibold">Rolodex</h1>
           <div className="flex items-center gap-2">
-            <Button asChild variant="outline">
-              <Link href="/app/rolodex/tags">
-                <Tags className="h-4 w-4" />
-                Tags
-              </Link>
-            </Button>
-            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-              <SheetTrigger asChild>
-                <Button>
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent>
-                <SheetHeader>
-                  <SheetTitle>Add Person</SheetTitle>
-                </SheetHeader>
-                <div className="mt-6">
-                  <PersonForm
-                    tags={tags}
-                    onSubmit={handleCreatePerson}
-                    onCancel={() => setIsSheetOpen(false)}
-                    onCreateTag={handleCreateTag}
-                    isLoading={isCreating}
-                  />
-                </div>
-              </SheetContent>
-            </Sheet>
+            <AddPersonSheet tags={tags} onPersonCreated={handlePersonCreated} />
           </div>
         </div>
 

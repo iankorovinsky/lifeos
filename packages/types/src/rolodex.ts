@@ -1,7 +1,10 @@
 import type {
-  Ask as DbAsk,
-  Favour as DbFavour,
+  Request as DbRequest,
+  RequestType as DbRequestType,
   Person as DbPerson,
+  PersonCalendarEvent as DbPersonCalendarEvent,
+  PersonEmail as DbPersonEmail,
+  PersonEmailEvent as DbPersonEmailEvent,
   PersonNote as DbPersonNote,
   Role as DbRole,
   Tag as DbTag,
@@ -10,21 +13,23 @@ import type {
 export type Role = DbRole;
 export type Tag = DbTag;
 export type PersonNote = DbPersonNote;
+export type PersonEmail = DbPersonEmail;
+export type PersonEmailEvent = DbPersonEmailEvent;
+export type PersonCalendarEvent = DbPersonCalendarEvent;
+export type RequestType = DbRequestType;
 
-export type Ask = DbAsk & {
-  children?: Ask[];
-};
-
-export type Favour = DbFavour & {
-  children?: Favour[];
+export type Request = DbRequest & {
+  children?: Request[];
 };
 
 export type Person = DbPerson & {
   roles: Role[];
   tags: Tag[];
+  emails: PersonEmail[];
+  emailEvents: PersonEmailEvent[];
+  calendarEvents: PersonCalendarEvent[];
   notes: PersonNote[];
-  asks: Ask[];
-  favours: Favour[];
+  requests: Request[];
 };
 
 export type RoleInput = {
@@ -33,20 +38,26 @@ export type RoleInput = {
 };
 
 export type CreatePersonRequest = {
-  name: string;
+  firstName: string;
+  lastName?: string;
   description?: string;
-  email?: string;
-  phone?: string;
+  phoneNumber?: string;
+  linkedinUrl?: string;
+  xUrl?: string;
+  emails?: string[];
   isFavorite?: boolean;
   roles?: RoleInput[];
   tagIds?: string[];
 };
 
 export type UpdatePersonRequest = {
-  name?: string;
+  firstName?: string;
+  lastName?: string;
   description?: string;
-  email?: string;
-  phone?: string;
+  phoneNumber?: string;
+  linkedinUrl?: string;
+  xUrl?: string;
+  emails?: string[];
   isFavorite?: boolean;
   roles?: RoleInput[];
   tagIds?: string[];
@@ -68,25 +79,14 @@ export type UpdateTagRequest = {
   color?: string;
 };
 
-export type CreateAskRequest = {
+export type CreateRequestRequest = {
   personId: string;
+  type: RequestType;
   description: string;
   parentId?: string;
 };
 
-export type CreateFavourRequest = {
-  personId: string;
-  description: string;
-  parentId?: string;
-};
-
-export type UpdateAskRequest = {
-  description?: string;
-  completed?: boolean;
-  parentId?: string | null;
-};
-
-export type UpdateFavourRequest = {
+export type UpdateRequestRequest = {
   description?: string;
   completed?: boolean;
   parentId?: string | null;
@@ -116,13 +116,9 @@ export interface PeopleFilters {
   offset?: number;
 }
 
-export interface AskFilters {
+export interface RequestFilters {
   personId?: string;
-  completed?: boolean;
-}
-
-export interface FavourFilters {
-  personId?: string;
+  type?: RequestType;
   completed?: boolean;
 }
 

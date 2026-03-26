@@ -5,17 +5,14 @@ import { useParams, useRouter } from 'next/navigation';
 import { PersonDetail } from '@/components/rolodex/person-detail';
 import { Button } from '@/components/ui/button';
 import {
-  createAsk,
-  createFavour,
+  createRequest,
   createNote,
-  deleteAsk,
-  deleteFavour,
+  deleteRequest,
   deleteNote,
   deletePerson,
   getPersonById,
   getTags,
-  updateAsk,
-  updateFavour,
+  updateRequest,
   updatePerson,
 } from '@/lib/rolodex/api';
 import type { Person, Tag, UpdatePersonRequest } from '@lifeos/types';
@@ -57,46 +54,33 @@ export default function PersonDetailPage() {
     router.push('/app/rolodex');
   };
 
-  const handleAddAsk = async (description: string) => {
-    const newAsk = await createAsk({ personId: id, description });
-    setPerson((prev) => (prev ? { ...prev, asks: [...(prev.asks || []), newAsk] } : null));
-  };
-
-  const handleToggleAsk = async (askId: string, completed: boolean) => {
-    const updated = await updateAsk(askId, { completed });
+  const handleAddRequest = async (description: string, type: 'ASK' | 'FAVOUR') => {
+    const newRequest = await createRequest({ personId: id, type, description });
     setPerson((prev) =>
-      prev ? { ...prev, asks: prev.asks.map((ask) => (ask.id === askId ? updated : ask)) } : null
+      prev ? { ...prev, requests: [...(prev.requests || []), newRequest] } : null
     );
   };
 
-  const handleDeleteAsk = async (askId: string) => {
-    await deleteAsk(askId);
-    setPerson((prev) =>
-      prev ? { ...prev, asks: prev.asks.filter((ask) => ask.id !== askId) } : null
-    );
-  };
-
-  const handleAddFavour = async (description: string) => {
-    const newFavour = await createFavour({ personId: id, description });
-    setPerson((prev) => (prev ? { ...prev, favours: [...(prev.favours || []), newFavour] } : null));
-  };
-
-  const handleToggleFavour = async (favourId: string, completed: boolean) => {
-    const updated = await updateFavour(favourId, { completed });
+  const handleToggleRequest = async (requestId: string, completed: boolean) => {
+    const updated = await updateRequest(requestId, { completed });
     setPerson((prev) =>
       prev
         ? {
             ...prev,
-            favours: prev.favours.map((favour) => (favour.id === favourId ? updated : favour)),
+            requests: prev.requests.map((request) =>
+              request.id === requestId ? updated : request
+            ),
           }
         : null
     );
   };
 
-  const handleDeleteFavour = async (favourId: string) => {
-    await deleteFavour(favourId);
+  const handleDeleteRequest = async (requestId: string) => {
+    await deleteRequest(requestId);
     setPerson((prev) =>
-      prev ? { ...prev, favours: prev.favours.filter((favour) => favour.id !== favourId) } : null
+      prev
+        ? { ...prev, requests: prev.requests.filter((request) => request.id !== requestId) }
+        : null
     );
   };
 
@@ -143,12 +127,9 @@ export default function PersonDetailPage() {
       onBack={() => router.push('/app/rolodex')}
       onUpdate={handleUpdate}
       onDelete={handleDelete}
-      onAddAsk={handleAddAsk}
-      onToggleAsk={handleToggleAsk}
-      onDeleteAsk={handleDeleteAsk}
-      onAddFavour={handleAddFavour}
-      onToggleFavour={handleToggleFavour}
-      onDeleteFavour={handleDeleteFavour}
+      onAddRequest={handleAddRequest}
+      onToggleRequest={handleToggleRequest}
+      onDeleteRequest={handleDeleteRequest}
       onAddNote={handleAddNote}
       onDeleteNote={handleDeleteNote}
     />
