@@ -8,12 +8,12 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "dev": "dotenv -e ../../.env -- bunx trigger.dev@4.4.3 dev",
-    "deploy": "dotenv -e ../../.env -- bunx trigger.dev@4.4.3 deploy",
+    "dev": "dotenv -e ../../.env -- bunx trigger.dev@4.3.3 dev",
+    "deploy": "dotenv -e ../../.env -- bunx trigger.dev@4.3.3 deploy",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@trigger.dev/sdk": "^4.4.3",
+    "@trigger.dev/sdk": "^4.3.3",
     "@lifeos/db": "workspace:*",
     "@lifeos/types": "workspace:*"
   },
