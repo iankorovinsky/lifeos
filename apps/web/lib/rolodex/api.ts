@@ -2,17 +2,15 @@ import type {
   ApiResponse,
   Person,
   Tag,
-  Ask,
-  Favour,
+  Request,
+  RequestType,
   PersonNote,
   CreatePersonRequest,
   UpdatePersonRequest,
   CreateTagRequest,
   UpdateTagRequest,
-  CreateAskRequest,
-  UpdateAskRequest,
-  CreateFavourRequest,
-  UpdateFavourRequest,
+  CreateRequestRequest,
+  UpdateRequestRequest,
   CreatePersonNoteRequest,
   PeopleQueryParams,
 } from '@lifeos/types';
@@ -109,52 +107,31 @@ export async function deleteTag(id: string): Promise<void> {
   await fetchApi(`/api/rolodex/tags/${id}`, { method: 'DELETE' });
 }
 
-// Asks
-export async function getAsks(personId?: string): Promise<Ask[]> {
-  const query = personId ? `?personId=${personId}` : '';
-  return fetchApi<Ask[]>(`/api/rolodex/asks${query}`);
+// Requests
+export async function getRequests(personId?: string, type?: RequestType): Promise<Request[]> {
+  const params = new URLSearchParams();
+  if (personId) params.set('personId', personId);
+  if (type) params.set('type', type);
+  const query = params.toString();
+  return fetchApi<Request[]>(`/api/rolodex/requests${query ? `?${query}` : ''}`);
 }
 
-export async function createAsk(data: CreateAskRequest): Promise<Ask> {
-  return fetchApi<Ask>('/api/rolodex/asks', {
+export async function createRequest(data: CreateRequestRequest): Promise<Request> {
+  return fetchApi<Request>('/api/rolodex/requests', {
     method: 'POST',
     body: JSON.stringify(data),
   });
 }
 
-export async function updateAsk(id: string, data: UpdateAskRequest): Promise<Ask> {
-  return fetchApi<Ask>(`/api/rolodex/asks/${id}`, {
+export async function updateRequest(id: string, data: UpdateRequestRequest): Promise<Request> {
+  return fetchApi<Request>(`/api/rolodex/requests/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   });
 }
 
-export async function deleteAsk(id: string): Promise<void> {
-  await fetchApi(`/api/rolodex/asks/${id}`, { method: 'DELETE' });
-}
-
-// Favours
-export async function getFavours(personId?: string): Promise<Favour[]> {
-  const query = personId ? `?personId=${personId}` : '';
-  return fetchApi<Favour[]>(`/api/rolodex/favours${query}`);
-}
-
-export async function createFavour(data: CreateFavourRequest): Promise<Favour> {
-  return fetchApi<Favour>('/api/rolodex/favours', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  });
-}
-
-export async function updateFavour(id: string, data: UpdateFavourRequest): Promise<Favour> {
-  return fetchApi<Favour>(`/api/rolodex/favours/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify(data),
-  });
-}
-
-export async function deleteFavour(id: string): Promise<void> {
-  await fetchApi(`/api/rolodex/favours/${id}`, { method: 'DELETE' });
+export async function deleteRequest(id: string): Promise<void> {
+  await fetchApi(`/api/rolodex/requests/${id}`, { method: 'DELETE' });
 }
 
 // Notes

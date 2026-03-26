@@ -22,29 +22,94 @@ model User {
 }
 
 model Person {
-  id          String   @id @default(uuid()) @db.Uuid
-  userId      String   @db.Uuid
-  name        String
+  id          String    @id @default(uuid()) @db.Uuid
+  userId      String    @db.Uuid
+  firstName   String
+  lastName    String?
   description String?
-  email       String?
-  phone       String?
-  isFavorite  Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  phoneNumber String?
+  linkedinUrl String?
+  xUrl        String?
+  isFavorite  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
 
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  roles       Role[]
-  tags        PersonTag[]
-  notes       PersonNote[]
-  asks        Ask[]
-  favours     Favour[]
+  user           User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roles          Role[]
+  tags           PersonTag[]
+  emails         PersonEmail[]
+  emailEvents    PersonEmailEvent[]
+  calendarEvents PersonCalendarEvent[]
+  notes          PersonNote[]
+  requests       Request[]
 
   @@index([userId])
-  @@index([name])
+  @@index([firstName])
+  @@index([lastName])
   @@index([userId, isFavorite])
   @@index([userId, deletedAt])
   @@map("people")
+}
+
+model PersonEmail {
+  id        String   @id @default(uuid()) @db.Uuid
+  personId  String   @db.Uuid
+  email     String
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@unique([personId, email])
+  @@index([personId])
+  @@index([email])
+  @@map("person_emails")
+}
+
+model PersonEmailEvent {
+  id           String                @id @default(uuid()) @db.Uuid
+  personId     String                @db.Uuid
+  emailAddress String
+  subject      String?
+  snippet      String?               @db.Text
+  direction    PersonEmailDirection?
+  occurredAt   DateTime
+  source       String?
+  externalId   String?
+  raw          Json?
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@index([personId])
+  @@index([occurredAt])
+  @@index([source, externalId])
+  @@map("person_email_events")
+}
+
+model PersonCalendarEvent {
+  id          String    @id @default(uuid()) @db.Uuid
+  personId    String    @db.Uuid
+  title       String
+  description String?   @db.Text
+  startsAt    DateTime
+  endsAt      DateTime?
+  location    String?
+  source      String?
+  externalId  String?
+  raw         Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@index([personId])
+  @@index([startsAt])
+  @@index([source, externalId])
+  @@map("person_calendar_events")
 }
 
 model Role {
@@ -55,7 +120,7 @@ model Role {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  person    Person   @relation(fields: [personId], references: [id], onDelete: Cascade)
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
 
   @@index([personId])
   @@index([title])
@@ -71,8 +136,8 @@ model Tag {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  people    PersonTag[]
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  people PersonTag[]
 
   @@unique([userId, name])
   @@index([userId])
@@ -85,8 +150,8 @@ model PersonTag {
   tagId     String   @db.Uuid
   createdAt DateTime @default(now())
 
-  person    Person   @relation(fields: [personId], references: [id], onDelete: Cascade)
-  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@unique([personId, tagId])
   @@index([personId])
@@ -100,46 +165,40 @@ model PersonNote {
   content   String   @db.Text
   createdAt DateTime @default(now())
 
-  person    Person   @relation(fields: [personId], references: [id], onDelete: Cascade)
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
 
   @@index([personId])
   @@map("person_notes")
 }
 
-model Ask {
-  id          String   @id @default(uuid()) @db.Uuid
-  personId    String   @db.Uuid
-  parentId    String?  @db.Uuid
+model Request {
+  id          String      @id @default(uuid()) @db.Uuid
+  personId    String      @db.Uuid
+  parentId    String?     @db.Uuid
+  type        RequestType
   description String
-  completed   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  completed   Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
-  person      Person   @relation(fields: [personId], references: [id], onDelete: Cascade)
-  parent      Ask?     @relation("AskToAsk", fields: [parentId], references: [id])
-  children    Ask[]    @relation("AskToAsk")
+  person   Person    @relation(fields: [personId], references: [id], onDelete: Cascade)
+  parent   Request?  @relation("RequestToRequest", fields: [parentId], references: [id])
+  children Request[] @relation("RequestToRequest")
 
   @@index([personId])
+  @@index([type])
   @@index([completed])
   @@index([parentId])
-  @@map("asks")
+  @@index([personId, type, completed])
+  @@map("requests")
 }
 
-model Favour {
-  id          String   @id @default(uuid()) @db.Uuid
-  personId    String   @db.Uuid
-  parentId    String?  @db.Uuid
-  description String
-  completed   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+enum PersonEmailDirection {
+  INBOUND
+  OUTBOUND
+}
 
-  person      Person   @relation(fields: [personId], references: [id], onDelete: Cascade)
-  parent      Favour?  @relation("FavourToFavour", fields: [parentId], references: [id])
-  children    Favour[] @relation("FavourToFavour")
-
-  @@index([personId])
-  @@index([completed])
-  @@index([parentId])
-  @@map("favours")
+enum RequestType {
+  ASK
+  FAVOUR
 }

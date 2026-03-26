@@ -29,7 +29,7 @@ export function RoleForm({ roles, onChange }: RoleFormProps) {
         roles.map((role, index) => (
           <div
             key={`${role.title}-${role.company}-${index}`}
-            className="grid grid-cols-[1fr_1fr_auto] gap-2"
+            className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]"
           >
             <Input
               value={role.title}
@@ -41,13 +41,19 @@ export function RoleForm({ roles, onChange }: RoleFormProps) {
               onChange={(event) => updateRole(index, { ...role, company: event.target.value })}
               placeholder="Company"
             />
-            <Button type="button" variant="ghost" size="icon" onClick={() => removeRole(index)}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => removeRole(index)}
+              className="text-stone-500 hover:bg-white hover:text-stone-900"
+            >
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         ))
       ) : (
-        <p className="text-sm text-muted-foreground">No roles yet</p>
+        <p className="text-sm text-muted-foreground">No roles yet.</p>
       )}
 
       <Button type="button" variant="outline" size="sm" onClick={addRole}>

@@ -97,45 +97,65 @@ export function AppSidebar({ user }: AppSidebarProps) {
               {navItems.map((item) => {
                 const expanded = isCategoryExpanded(item);
 
+                // If item has subItems, render as collapsible
+                if (item.subItems && item.subItems.length > 0) {
+                  return (
+                    <Collapsible
+                      key={item.href}
+                      asChild
+                      defaultOpen={expanded}
+                      className="group/collapsible"
+                    >
+                      <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton
+                            isActive={false}
+                            tooltip={item.label}
+                            className="[&:hover]:bg-sidebar-accent [&:hover]:text-sidebar-accent-foreground text-base"
+                          >
+                            <item.icon className="h-5 w-5" />
+                            <span>{item.label}</span>
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {item.subItems.map((subItem) => (
+                              <SidebarMenuSubItem key={subItem.href}>
+                                <Link href={subItem.href} className="block">
+                                  <span
+                                    className={`inline-flex px-2 py-1 rounded-md text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ${
+                                      isActive(subItem.href)
+                                        ? 'bg-sidebar-active text-sidebar-active-foreground'
+                                        : ''
+                                    }`}
+                                  >
+                                    {subItem.label}
+                                  </span>
+                                </Link>
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </SidebarMenuItem>
+                    </Collapsible>
+                  );
+                }
+
+                // Otherwise, render as direct link
                 return (
-                  <Collapsible
-                    key={item.href}
-                    asChild
-                    defaultOpen={expanded}
-                    className="group/collapsible"
-                  >
-                    <SidebarMenuItem>
-                      <CollapsibleTrigger asChild>
-                        <SidebarMenuButton
-                          isActive={false}
-                          tooltip={item.label}
-                          className="[&:hover]:bg-sidebar-accent [&:hover]:text-sidebar-accent-foreground text-base"
-                        >
-                          <item.icon className="h-5 w-5" />
-                          <span>{item.label}</span>
-                        </SidebarMenuButton>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent>
-                        <SidebarMenuSub>
-                          {item.subItems?.map((subItem) => (
-                            <SidebarMenuSubItem key={subItem.href}>
-                              <Link href={subItem.href} className="block">
-                                <span
-                                  className={`inline-flex px-2 py-1 rounded-md text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ${
-                                    isActive(subItem.href)
-                                      ? 'bg-sidebar-active text-sidebar-active-foreground'
-                                      : ''
-                                  }`}
-                                >
-                                  {subItem.label}
-                                </span>
-                              </Link>
-                            </SidebarMenuSubItem>
-                          ))}
-                        </SidebarMenuSub>
-                      </CollapsibleContent>
-                    </SidebarMenuItem>
-                  </Collapsible>
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive(item.href)}
+                      tooltip={item.label}
+                      className="text-base"
+                    >
+                      <Link href={item.href}>
+                        <item.icon className="h-5 w-5" />
+                        <span>{item.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
                 );
               })}
             </SidebarMenu>

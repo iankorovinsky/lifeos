@@ -1,207 +1,233 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { CreatableMultiSelect } from '@/components/ui/creatable-multi-select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
-import { RoleForm } from './role-form';
-import { TagChip } from './tag-chip';
-import { Plus, Star } from 'lucide-react';
-import type { Tag, CreatePersonRequest, RoleInput } from '@lifeos/types';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
+import type { Tag } from '@lifeos/types';
+
+export type PersonFormValues = {
+  firstName: string;
+  lastName?: string;
+  description?: string;
+  phoneNumber?: string;
+  linkedinUrl?: string;
+  xUrl?: string;
+  emails?: string[];
+  isFavorite?: boolean;
+  tagNames?: string[];
+};
 
 interface PersonFormProps {
   initialData?: {
-    name?: string;
+    firstName?: string;
+    lastName?: string;
     description?: string;
-    email?: string;
-    phone?: string;
+    phoneNumber?: string;
+    linkedinUrl?: string;
+    xUrl?: string;
+    emails?: string[];
     isFavorite?: boolean;
-    roles?: RoleInput[];
-    tagIds?: string[];
+    tagNames?: string[];
   };
   tags: Tag[];
-  onSubmit: (data: CreatePersonRequest) => Promise<void>;
+  onSubmit: (data: PersonFormValues) => Promise<void>;
   onCancel: () => void;
-  onCreateTag?: (data: { name: string; color?: string }) => Promise<Tag>;
   isLoading?: boolean;
 }
 
-export function PersonForm({
-  initialData,
-  tags,
-  onSubmit,
-  onCancel,
-  onCreateTag,
-  isLoading,
-}: PersonFormProps) {
-  const [name, setName] = useState(initialData?.name || '');
+export function PersonForm({ initialData, tags, onSubmit, onCancel, isLoading }: PersonFormProps) {
+  const [firstName, setFirstName] = useState(initialData?.firstName || '');
+  const [lastName, setLastName] = useState(initialData?.lastName || '');
   const [description, setDescription] = useState(initialData?.description || '');
-  const [email, setEmail] = useState(initialData?.email || '');
-  const [phone, setPhone] = useState(initialData?.phone || '');
+  const [phoneNumber, setPhoneNumber] = useState(initialData?.phoneNumber || '');
+  const [linkedinUrl, setLinkedinUrl] = useState(initialData?.linkedinUrl || '');
+  const [xUrl, setXUrl] = useState(initialData?.xUrl || '');
+  const [emailsText, setEmailsText] = useState((initialData?.emails || []).join('\n'));
   const [isFavorite, setIsFavorite] = useState(initialData?.isFavorite || false);
-  const [roles, setRoles] = useState<RoleInput[]>(initialData?.roles || []);
-  const [selectedTagIds, setSelectedTagIds] = useState<string[]>(initialData?.tagIds || []);
-  const [newTagName, setNewTagName] = useState('');
-  const [newTagColor, setNewTagColor] = useState('#94a3b8');
-  const [isCreatingTag, setIsCreatingTag] = useState(false);
+  const [selectedTagNames, setSelectedTagNames] = useState(initialData?.tagNames || []);
+
+  const tagOptions = useMemo(
+    () =>
+      tags
+        .map((tag) => ({
+          label: tag.name,
+          value: tag.name,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label)),
+    [tags]
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const emails = emailsText
+      .split(/[\n,]/)
+      .map((email) => email.trim())
+      .filter(Boolean);
+
     await onSubmit({
-      name,
+      firstName,
+      lastName: lastName || undefined,
       description: description || undefined,
-      email: email || undefined,
-      phone: phone || undefined,
+      phoneNumber: phoneNumber || undefined,
+      linkedinUrl: linkedinUrl || undefined,
+      xUrl: xUrl || undefined,
+      emails: emails.length > 0 ? emails : undefined,
       isFavorite,
-      roles,
-      tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,
+      tagNames: selectedTagNames.length > 0 ? selectedTagNames : undefined,
     });
   };
 
-  const toggleTag = (tagId: string) => {
-    setSelectedTagIds((prev) =>
-      prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]
-    );
-  };
-
-  const handleCreateTag = async () => {
-    if (!onCreateTag || !newTagName.trim()) {
-      return;
-    }
-
-    setIsCreatingTag(true);
-    try {
-      const tag = await onCreateTag({
-        name: newTagName.trim(),
-        color: newTagColor,
-      });
-      setSelectedTagIds((prev) => (prev.includes(tag.id) ? prev : [...prev, tag.id]));
-      setNewTagName('');
-      setNewTagColor('#94a3b8');
-    } finally {
-      setIsCreatingTag(false);
-    }
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="name">Name *</Label>
-        <Input
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="John Doe"
-          required
-        />
-      </div>
+    <form onSubmit={handleSubmit} className="flex min-h-full flex-col bg-background">
+      <div className="space-y-6 px-6 py-6">
+        <section className="space-y-4">
+          <h3 className="text-sm font-medium text-foreground">Identity</h3>
 
-      <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="How do you know this person?"
-          rows={3}
-        />
-      </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="first-name">
+                First name <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="first-name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder="John"
+                required
+              />
+            </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="john@example.com"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="phone">Phone</Label>
-          <Input
-            id="phone"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="+1 555 123 4567"
-          />
-        </div>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <Switch id="favorite" checked={isFavorite} onCheckedChange={setIsFavorite} />
-        <Label htmlFor="favorite" className="flex items-center gap-1 cursor-pointer">
-          <Star className={`h-4 w-4 ${isFavorite ? 'fill-yellow-400 text-yellow-400' : ''}`} />
-          Favorite
-        </Label>
-      </div>
-
-      <div className="space-y-2">
-        <Label>Roles</Label>
-        <RoleForm roles={roles} onChange={setRoles} />
-      </div>
-
-      {tags.length > 0 && (
-        <div className="space-y-2">
-          <Label>Tags</Label>
-          <div className="flex flex-wrap gap-2">
-            {tags.map((tag) => (
-              <button
-                key={tag.id}
-                type="button"
-                onClick={() => toggleTag(tag.id)}
-                className="focus:outline-none"
-              >
-                <TagChip
-                  tag={{
-                    ...tag,
-                    color: selectedTagIds.includes(tag.id) ? tag.color : null,
-                  }}
-                />
-              </button>
-            ))}
+            <div className="space-y-2">
+              <Label htmlFor="last-name">Last name</Label>
+              <Input
+                id="last-name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="Doe"
+              />
+            </div>
           </div>
-        </div>
-      )}
 
-      {onCreateTag ? (
-        <div className="space-y-2">
-          <Label>Create tag</Label>
-          <div className="grid grid-cols-[1fr_auto_auto] gap-2">
-            <Input
-              value={newTagName}
-              onChange={(event) => setNewTagName(event.target.value)}
-              placeholder="Tag name"
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="How do you know this person?"
+              rows={3}
             />
-            <Input
-              type="color"
-              value={newTagColor}
-              onChange={(event) => setNewTagColor(event.target.value)}
-              className="w-14 p-1"
+          </div>
+
+          <div className="flex items-center justify-between gap-3 rounded-lg border p-3">
+            <Label htmlFor="favorite" className="flex items-center gap-2 text-sm font-medium">
+              <Star
+                className={cn(
+                  'h-4 w-4',
+                  isFavorite ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground'
+                )}
+              />
+              Favorite
+            </Label>
+            <Switch id="favorite" checked={isFavorite} onCheckedChange={setIsFavorite} />
+          </div>
+        </section>
+
+        <Separator />
+
+        <section className="space-y-4">
+          <h3 className="text-sm font-medium text-foreground">Contact</h3>
+
+          <div className="space-y-2">
+            <Label htmlFor="emails">Emails</Label>
+            <Textarea
+              id="emails"
+              value={emailsText}
+              onChange={(e) => setEmailsText(e.target.value)}
+              placeholder={'john@example.com\njohn@work.com'}
+              rows={3}
             />
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCreateTag}
-              disabled={!newTagName.trim() || isCreatingTag}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add
+            <p className="text-xs text-muted-foreground">One per line or separated by commas.</p>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="phone-number">Phone number</Label>
+              <Input
+                id="phone-number"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="+1 555 123 4567"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="linkedin-url">LinkedIn</Label>
+              <Input
+                id="linkedin-url"
+                value={linkedinUrl}
+                onChange={(e) => setLinkedinUrl(e.target.value)}
+                placeholder="https://linkedin.com/in/johndoe"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="x-url">X</Label>
+            <Input
+              id="x-url"
+              value={xUrl}
+              onChange={(e) => setXUrl(e.target.value)}
+              placeholder="https://x.com/johndoe"
+            />
+          </div>
+        </section>
+
+        <Separator />
+
+        <section className="space-y-3">
+          <div className="space-y-1">
+            <h3 className="text-sm font-medium text-foreground">Tags</h3>
+            <p className="text-sm text-muted-foreground">
+              Search existing tags or add a new one if it does not exist yet.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="tags">Tags</Label>
+            <CreatableMultiSelect
+              options={tagOptions}
+              values={selectedTagNames}
+              onChange={setSelectedTagNames}
+              placeholder="Search tags"
+              searchPlaceholder="Search tags..."
+              emptyText="No tags found."
+              createLabel={(query) => `Add tag "${query}"`}
+            />
+          </div>
+        </section>
+      </div>
+
+      <div className="sticky bottom-0 mt-auto border-t bg-background px-6 py-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-muted-foreground">You can edit the details later.</p>
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={!firstName.trim() || isLoading}>
+              {isLoading ? 'Saving...' : 'Save person'}
             </Button>
           </div>
         </div>
-      ) : null}
-
-      <div className="flex justify-end gap-2 pt-4">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-          Cancel
-        </Button>
-        <Button type="submit" disabled={!name.trim() || isLoading}>
-          {isLoading ? 'Saving...' : 'Save'}
-        </Button>
       </div>
     </form>
   );

@@ -1,5 +1,5 @@
-import type { Prisma } from '@lifeos/db';
 import { prisma } from '@lifeos/db';
+import type { Prisma } from '@lifeos/db';
 import type {
   Person,
   PeopleFilters,
@@ -16,10 +16,22 @@ const personInclude = {
       tag: true,
     },
   },
+  emails: {
+    orderBy: [{ isPrimary: 'desc' as const }, { email: 'asc' as const }],
+  },
+  emailEvents: {
+    orderBy: {
+      occurredAt: 'desc' as const,
+    },
+  },
+  calendarEvents: {
+    orderBy: {
+      startsAt: 'desc' as const,
+    },
+  },
   notes: true,
-  asks: true,
-  favours: true,
-};
+  requests: true,
+} satisfies Prisma.PersonInclude;
 
 type PersonWithRelations = Prisma.PersonGetPayload<{
   include: typeof personInclude;
@@ -58,6 +70,13 @@ const normalizeRoles = (roles: RoleInput[] | undefined) =>
     }))
     .filter((role) => role.title.length > 0) ?? [];
 
+const normalizeEmails = (emails: string[] | undefined) => {
+  const normalized =
+    emails?.map((email) => email.trim().toLowerCase()).filter((email) => email.length > 0) ?? [];
+
+  return [...new Set(normalized)];
+};
+
 export const listPeople = async (userId: string, filters: PeopleFilters) => {
   const where: Prisma.PersonWhereInput = {
     userId,
@@ -67,8 +86,19 @@ export const listPeople = async (userId: string, filters: PeopleFilters) => {
   if (filters.search) {
     const search = filters.search;
     where.OR = [
-      { name: { contains: search, mode: 'insensitive' } },
+      { firstName: { contains: search, mode: 'insensitive' } },
+      { lastName: { contains: search, mode: 'insensitive' } },
       { description: { contains: search, mode: 'insensitive' } },
+      { phoneNumber: { contains: search, mode: 'insensitive' } },
+      { linkedinUrl: { contains: search, mode: 'insensitive' } },
+      { xUrl: { contains: search, mode: 'insensitive' } },
+      {
+        emails: {
+          some: {
+            email: { contains: search, mode: 'insensitive' },
+          },
+        },
+      },
       {
         roles: {
           some: {
@@ -97,7 +127,7 @@ export const listPeople = async (userId: string, filters: PeopleFilters) => {
   const people = await prisma.person.findMany({
     where,
     include: personInclude,
-    orderBy: [{ isFavorite: 'desc' }, { name: 'asc' }],
+    orderBy: [{ isFavorite: 'desc' }, { firstName: 'asc' }, { lastName: 'asc' }],
     take: filters.limit,
     skip: filters.offset,
   });
@@ -121,16 +151,27 @@ export const getPersonById = async (userId: string, id: string) => {
 export const createPerson = async (userId: string, data: CreatePersonRequest) => {
   const tagIds = data.tagIds ?? [];
   const roles = normalizeRoles(data.roles);
+  const emails = normalizeEmails(data.emails);
   await validateTagIds(userId, tagIds);
 
   const person = await prisma.person.create({
     data: {
       userId,
-      name: data.name,
+      firstName: data.firstName.trim(),
+      lastName: data.lastName?.trim() || undefined,
       description: data.description,
-      email: data.email,
-      phone: data.phone,
+      phoneNumber: data.phoneNumber?.trim() || undefined,
+      linkedinUrl: data.linkedinUrl?.trim() || undefined,
+      xUrl: data.xUrl?.trim() || undefined,
       isFavorite: data.isFavorite ?? false,
+      emails: emails.length
+        ? {
+            create: emails.map((email, index) => ({
+              email,
+              isPrimary: index === 0,
+            })),
+          }
+        : undefined,
       roles: roles.length
         ? {
             create: roles,
@@ -160,6 +201,7 @@ export const updatePerson = async (userId: string, id: string, data: UpdatePerso
 
   const tagIds = data.tagIds;
   const roles = data.roles ? normalizeRoles(data.roles) : undefined;
+  const emails = data.emails ? normalizeEmails(data.emails) : undefined;
   if (tagIds) {
     await validateTagIds(userId, tagIds);
   }
@@ -167,11 +209,23 @@ export const updatePerson = async (userId: string, id: string, data: UpdatePerso
   const person = await prisma.person.update({
     where: { id },
     data: {
-      name: data.name,
+      firstName: data.firstName?.trim(),
+      lastName: data.lastName?.trim() || undefined,
       description: data.description,
-      email: data.email,
-      phone: data.phone,
+      phoneNumber: data.phoneNumber?.trim() || undefined,
+      linkedinUrl: data.linkedinUrl?.trim() || undefined,
+      xUrl: data.xUrl?.trim() || undefined,
       isFavorite: data.isFavorite,
+      emails:
+        emails !== undefined
+          ? {
+              deleteMany: {},
+              create: emails.map((email, index) => ({
+                email,
+                isPrimary: index === 0,
+              })),
+            }
+          : undefined,
       roles:
         roles !== undefined
           ? {

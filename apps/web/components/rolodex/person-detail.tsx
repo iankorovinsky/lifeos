@@ -1,20 +1,31 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { ArrowLeft, Building, Mail, Pencil, Phone, Save, Star, Trash2, X } from 'lucide-react';
+import {
+  ArrowLeft,
+  AtSign,
+  Building,
+  Calendar,
+  Link2,
+  Mail,
+  Pencil,
+  Phone,
+  Save,
+  Star,
+  Trash2,
+  X,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { AsksList } from './asks-list';
-import { FavoursList } from './favours-list';
+import { RequestsList } from './requests-list';
 import { PersonNotes } from './person-notes';
 import { RoleForm } from './role-form';
 import { TagChip } from './tag-chip';
 import type {
-  Ask,
-  Favour,
+  Request,
   Person,
   PersonNote,
   RoleInput,
@@ -28,12 +39,9 @@ interface PersonDetailProps {
   onBack: () => void;
   onUpdate: (data: UpdatePersonRequest) => Promise<Person>;
   onDelete: () => Promise<void>;
-  onAddAsk: (description: string) => Promise<void>;
-  onToggleAsk: (id: string, completed: boolean) => Promise<void>;
-  onDeleteAsk: (id: string) => Promise<void>;
-  onAddFavour: (description: string) => Promise<void>;
-  onToggleFavour: (id: string, completed: boolean) => Promise<void>;
-  onDeleteFavour: (id: string) => Promise<void>;
+  onAddRequest: (description: string, type: 'ASK' | 'FAVOUR') => Promise<void>;
+  onToggleRequest: (id: string, completed: boolean) => Promise<void>;
+  onDeleteRequest: (id: string) => Promise<void>;
   onAddNote: (content: string) => Promise<void>;
   onDeleteNote: (id: string) => Promise<void>;
 }
@@ -44,31 +52,37 @@ export function PersonDetail({
   onBack,
   onUpdate,
   onDelete,
-  onAddAsk,
-  onToggleAsk,
-  onDeleteAsk,
-  onAddFavour,
-  onToggleFavour,
-  onDeleteFavour,
+  onAddRequest,
+  onToggleRequest,
+  onDeleteRequest,
   onAddNote,
   onDeleteNote,
 }: PersonDetailProps) {
+  const fullName = [person.firstName, person.lastName].filter(Boolean).join(' ');
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [editName, setEditName] = useState(person.name);
+  const [editFirstName, setEditFirstName] = useState(person.firstName);
+  const [editLastName, setEditLastName] = useState(person.lastName || '');
   const [editDescription, setEditDescription] = useState(person.description || '');
-  const [editEmail, setEditEmail] = useState(person.email || '');
-  const [editPhone, setEditPhone] = useState(person.phone || '');
+  const [editEmailsText, setEditEmailsText] = useState(
+    person.emails.map((email) => email.email).join('\n')
+  );
+  const [editPhoneNumber, setEditPhoneNumber] = useState(person.phoneNumber || '');
+  const [editLinkedinUrl, setEditLinkedinUrl] = useState(person.linkedinUrl || '');
+  const [editXUrl, setEditXUrl] = useState(person.xUrl || '');
   const [editRoles, setEditRoles] = useState<RoleInput[]>(
     person.roles.map((role) => ({ title: role.title, company: role.company || '' }))
   );
   const [editTagIds, setEditTagIds] = useState<string[]>(person.tags.map((tag) => tag.id));
 
   const resetEditState = useCallback(() => {
-    setEditName(person.name);
+    setEditFirstName(person.firstName);
+    setEditLastName(person.lastName || '');
     setEditDescription(person.description || '');
-    setEditEmail(person.email || '');
-    setEditPhone(person.phone || '');
+    setEditEmailsText(person.emails.map((email) => email.email).join('\n'));
+    setEditPhoneNumber(person.phoneNumber || '');
+    setEditLinkedinUrl(person.linkedinUrl || '');
+    setEditXUrl(person.xUrl || '');
     setEditRoles(person.roles.map((role) => ({ title: role.title, company: role.company || '' })));
     setEditTagIds(person.tags.map((tag) => tag.id));
   }, [person]);
@@ -80,13 +94,21 @@ export function PersonDetail({
   };
 
   const handleSave = async () => {
+    const emails = editEmailsText
+      .split(/[\n,]/)
+      .map((email) => email.trim())
+      .filter(Boolean);
+
     setIsSaving(true);
     try {
       await onUpdate({
-        name: editName.trim(),
+        firstName: editFirstName.trim(),
+        lastName: editLastName || undefined,
         description: editDescription || undefined,
-        email: editEmail || undefined,
-        phone: editPhone || undefined,
+        emails,
+        phoneNumber: editPhoneNumber || undefined,
+        linkedinUrl: editLinkedinUrl || undefined,
+        xUrl: editXUrl || undefined,
         roles: editRoles,
         tagIds: editTagIds,
       });
@@ -123,13 +145,22 @@ export function PersonDetail({
 
           <div className="flex-1">
             {isEditing ? (
-              <Input
-                value={editName}
-                onChange={(event) => setEditName(event.target.value)}
-                className="text-xl font-semibold"
-              />
+              <div className="grid grid-cols-2 gap-3">
+                <Input
+                  value={editFirstName}
+                  onChange={(event) => setEditFirstName(event.target.value)}
+                  className="text-xl font-semibold"
+                  placeholder="First name"
+                />
+                <Input
+                  value={editLastName}
+                  onChange={(event) => setEditLastName(event.target.value)}
+                  className="text-xl font-semibold"
+                  placeholder="Last name"
+                />
+              </div>
             ) : (
-              <h1 className="text-2xl font-semibold">{person.name}</h1>
+              <h1 className="text-2xl font-semibold">{fullName}</h1>
             )}
           </div>
 
@@ -145,7 +176,11 @@ export function PersonDetail({
                 <Button variant="ghost" size="icon" onClick={handleCancel} disabled={isSaving}>
                   <X className="h-4 w-4" />
                 </Button>
-                <Button size="icon" onClick={handleSave} disabled={isSaving || !editName.trim()}>
+                <Button
+                  size="icon"
+                  onClick={handleSave}
+                  disabled={isSaving || !editFirstName.trim()}
+                >
                   <Save className="h-4 w-4" />
                 </Button>
               </>
@@ -174,23 +209,40 @@ export function PersonDetail({
                   rows={3}
                 />
               </div>
+              <div className="space-y-2">
+                <Label>Emails</Label>
+                <Textarea
+                  value={editEmailsText}
+                  onChange={(event) => setEditEmailsText(event.target.value)}
+                  placeholder={'john@example.com\njohn@work.com'}
+                  rows={3}
+                />
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Email</Label>
+                  <Label>Phone number</Label>
                   <Input
-                    value={editEmail}
-                    onChange={(event) => setEditEmail(event.target.value)}
-                    placeholder="email@example.com"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Phone</Label>
-                  <Input
-                    value={editPhone}
-                    onChange={(event) => setEditPhone(event.target.value)}
+                    value={editPhoneNumber}
+                    onChange={(event) => setEditPhoneNumber(event.target.value)}
                     placeholder="+1 555 123 4567"
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label>LinkedIn</Label>
+                  <Input
+                    value={editLinkedinUrl}
+                    onChange={(event) => setEditLinkedinUrl(event.target.value)}
+                    placeholder="https://linkedin.com/in/johndoe"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>X</Label>
+                <Input
+                  value={editXUrl}
+                  onChange={(event) => setEditXUrl(event.target.value)}
+                  placeholder="https://x.com/johndoe"
+                />
               </div>
             </>
           ) : (
@@ -200,25 +252,55 @@ export function PersonDetail({
               ) : null}
 
               <div className="flex flex-wrap gap-4 text-sm">
-                {person.email ? (
+                {person.phoneNumber ? (
                   <a
-                    href={`mailto:${person.email}`}
-                    className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
-                  >
-                    <Mail className="h-4 w-4" />
-                    {person.email}
-                  </a>
-                ) : null}
-                {person.phone ? (
-                  <a
-                    href={`tel:${person.phone}`}
+                    href={`tel:${person.phoneNumber}`}
                     className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
                   >
                     <Phone className="h-4 w-4" />
-                    {person.phone}
+                    {person.phoneNumber}
+                  </a>
+                ) : null}
+                {person.linkedinUrl ? (
+                  <a
+                    href={person.linkedinUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+                  >
+                    <Link2 className="h-4 w-4" />
+                    LinkedIn
+                  </a>
+                ) : null}
+                {person.xUrl ? (
+                  <a
+                    href={person.xUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+                  >
+                    <AtSign className="h-4 w-4" />X
                   </a>
                 ) : null}
               </div>
+
+              {person.emails.length > 0 ? (
+                <div className="space-y-2">
+                  {person.emails.map((email) => (
+                    <a
+                      key={email.id}
+                      href={`mailto:${email.email}`}
+                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+                    >
+                      <Mail className="h-4 w-4" />
+                      <span>{email.email}</span>
+                      {email.isPrimary ? (
+                        <span className="rounded bg-muted px-2 py-0.5 text-xs">Primary</span>
+                      ) : null}
+                    </a>
+                  ))}
+                </div>
+              ) : null}
             </>
           )}
         </div>
@@ -278,6 +360,66 @@ export function PersonDetail({
         <Separator className="my-6" />
 
         <div className="mb-6">
+          <h2 className="mb-3 text-sm font-medium">Email activity</h2>
+          {person.emailEvents.length > 0 ? (
+            <div className="space-y-3">
+              {person.emailEvents.slice(0, 5).map((event) => (
+                <div key={event.id} className="rounded-lg border p-3">
+                  <div className="flex items-center justify-between gap-3 text-sm">
+                    <span className="font-medium">{event.subject || 'Untitled email'}</span>
+                    <span className="text-muted-foreground">
+                      {new Date(event.occurredAt).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="mt-1 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                    {event.direction ? <span>{event.direction.toLowerCase()}</span> : null}
+                    {event.emailAddress ? <span>{event.emailAddress}</span> : null}
+                    {event.source ? <span>{event.source}</span> : null}
+                  </div>
+                  {event.snippet ? (
+                    <p className="mt-2 text-sm text-muted-foreground">{event.snippet}</p>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm italic text-muted-foreground">No email events yet</p>
+          )}
+        </div>
+
+        <Separator className="my-6" />
+
+        <div className="mb-6">
+          <h2 className="mb-3 text-sm font-medium">Calendar activity</h2>
+          {person.calendarEvents.length > 0 ? (
+            <div className="space-y-3">
+              {person.calendarEvents.slice(0, 5).map((event) => (
+                <div key={event.id} className="rounded-lg border p-3">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <Calendar className="h-4 w-4" />
+                    <span>{event.title}</span>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {new Date(event.startsAt).toLocaleString()}
+                    {event.endsAt ? ` to ${new Date(event.endsAt).toLocaleString()}` : ''}
+                  </p>
+                  {event.location ? (
+                    <p className="mt-1 text-sm text-muted-foreground">{event.location}</p>
+                  ) : null}
+                  {event.description ? (
+                    <p className="mt-2 text-sm text-muted-foreground">{event.description}</p>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm italic text-muted-foreground">No calendar events yet</p>
+          )}
+        </div>
+
+        <Separator className="my-6" />
+
+        <div className="mb-6">
           <h2 className="mb-3 text-sm font-medium">Notes</h2>
           <PersonNotes
             notes={person.notes || ([] as PersonNote[])}
@@ -290,11 +432,14 @@ export function PersonDetail({
 
         <div className="mb-6">
           <h2 className="mb-3 text-sm font-medium">Asks (things you asked for)</h2>
-          <AsksList
-            asks={person.asks || ([] as Ask[])}
-            onAdd={onAddAsk}
-            onToggle={onToggleAsk}
-            onDelete={onDeleteAsk}
+          <RequestsList
+            requests={person.requests || ([] as Request[])}
+            type="ASK"
+            placeholder="Add something you asked for..."
+            emptyMessage="No asks yet"
+            onAdd={(description) => onAddRequest(description, 'ASK')}
+            onToggle={onToggleRequest}
+            onDelete={onDeleteRequest}
           />
         </div>
 
@@ -302,11 +447,14 @@ export function PersonDetail({
 
         <div>
           <h2 className="mb-3 text-sm font-medium">Favours (things you did for them)</h2>
-          <FavoursList
-            favours={person.favours || ([] as Favour[])}
-            onAdd={onAddFavour}
-            onToggle={onToggleFavour}
-            onDelete={onDeleteFavour}
+          <RequestsList
+            requests={person.requests || ([] as Request[])}
+            type="FAVOUR"
+            placeholder="Add a favour you did..."
+            emptyMessage="No favours yet"
+            onAdd={(description) => onAddRequest(description, 'FAVOUR')}
+            onToggle={onToggleRequest}
+            onDelete={onDeleteRequest}
           />
         </div>
       </div>
