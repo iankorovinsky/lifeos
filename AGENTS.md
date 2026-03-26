@@ -56,4 +56,4 @@
 ## Configuration Notes
 
 - Root `.env` is loaded by Bun and shared by apps. Add app-specific overrides via `.env.local` if needed.
-- Trigger.dev requires `TRIGGER_SECRET_KEY` for task execution.
+- Trigger.dev requires `TRIGGER_ACCESS_TOKEN` for task execution.

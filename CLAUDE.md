@@ -108,7 +108,7 @@ Create `.env` at repo root. Required variables:
 - `DIRECT_URL` - Direct PostgreSQL connection (for Prisma migrations)
 - `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` - Supabase anon key
-- `TRIGGER_SECRET_KEY` - Trigger.dev secret key (for triggering tasks from app code)
+- `TRIGGER_ACCESS_TOKEN` - Trigger.dev secret key (for triggering tasks from app code)
 
 ### GitHub Secrets (for CI/CD)
 
