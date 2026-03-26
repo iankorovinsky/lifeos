@@ -57,3 +57,14 @@
 
 - Root `.env` is loaded by Bun and shared by apps. Add app-specific overrides via `.env.local` if needed.
 - Trigger.dev requires `TRIGGER_ACCESS_TOKEN` for task execution.
+
+## Database Migration Policy
+
+- For schema changes, edit `packages/db/prisma/schema/schema.prisma` first.
+- Create and apply migrations by running `bun run db:migrate`.
+- Run `bun run db:generate` after a successful migration.
+- Prefer the repo Bun commands over direct Prisma commands for database work.
+- Treat `packages/db/prisma/schema/migrations/*` as generated artifacts that should only change as a result of running `bun run db:migrate`.
+- Never manually create, rename, or edit files under `packages/db/prisma/schema/migrations/` unless explicitly asked for a manual SQL migration.
+- Never use `prisma db push` as a substitute for migrations.
+- If `bun run db:migrate` fails, stop and report the error. Do not hand-write `migration.sql` or make manual migration edits to work around it.

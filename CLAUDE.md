@@ -42,6 +42,17 @@ bun run db:migrate     # Run migrations
 bun run db:studio      # Open Prisma Studio
 ```
 
+### Database Migration Policy
+
+- Edit `packages/db/prisma/schema/schema.prisma` first for any schema change.
+- Create and apply migrations by running `bun run db:migrate`.
+- Run `bun run db:generate` after a successful migration.
+- Prefer the repo Bun commands over direct Prisma commands for database work.
+- Treat `packages/db/prisma/schema/migrations/*` as generated artifacts that should only change as a result of running `bun run db:migrate`.
+- Never manually create, rename, or edit files under `packages/db/prisma/schema/migrations/` unless explicitly asked for a manual SQL migration.
+- Never use `prisma db push` as a substitute for migrations.
+- If `bun run db:migrate` fails, stop and report the error. Do not hand-write `migration.sql` or manually patch migration files to work around it.
+
 ### Trigger.dev (Background Jobs)
 
 ```bash
