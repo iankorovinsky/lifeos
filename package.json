@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@prisma/client": "^6.0.0",
-    "@trigger.dev/sdk": "^4.3.3",
+    "@trigger.dev/sdk": "4.3.3",
     "blessed": "^0.1.81",
     "blessed-contrib": "^4.11.0",
     "chokidar": "^4.0.3",

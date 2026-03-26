@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@trigger.dev/sdk": "^4.3.3",
+    "@trigger.dev/sdk": "4.3.3",
     "@lifeos/db": "workspace:*",
     "@lifeos/types": "workspace:*"
   },
